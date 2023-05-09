@@ -21,7 +21,7 @@ Whenever new 2FA codes are added to LastPass Authenticator, simply download a ne
 ## FAQ
 
 1. **Q: Why can't I pass the password as an argument like `2fa find -i /path/to/export.json -f <searchstring> --password supers3cret`?**<br> 
-  A: Because that would store your password in your terminal's history which is a security risk. Also because it prevents using this tool non-interactively (which could be dangers when some malicious code tries to run this tool unseen in the background).
+  A: Because that would store your password in your terminal's history which is a security risk. Also because it prevents using this tool non-interactively (which could be dangerous when some malicious code tries to run this tool unseen in the background).
 
 ## License
 
