@@ -3,8 +3,8 @@
 ## Usage
 
 * Put the executable (`2fa.exe` for windows, `2fa` for MacOs / Linux) somewhere in your path.
-* Use [Lastpas Authenticator Export](https://github.com/dmaasland/lastpass-authenticator-export) ([fork here](https://github.com/RobThree/lastpass-authenticator-export/tree/main)) to download the secrets file (`export.json`).
-* Place the `export.json` file in some directory
+* Use [Lastpass Authenticator Export](https://github.com/dmaasland/lastpass-authenticator-export) ([fork here](https://github.com/RobThree/lastpass-authenticator-export/tree/main)) to download the secrets file (`export.json`).
+* Place the `export.json` file in a known directory.
 * Encrypt the `export.json` file with the following command:<br>
 
     `2fa encrypt -i /path/to/export.json`
@@ -14,11 +14,18 @@
 
     `2fa find -i /path/to/export.json -f <searchstring>`
 
+    You will be asked for the password used to encrypt the file in the previous step and will then be shown all accounts matching `<searchstring>` with the current TOTP code.
+
 Whenever new 2FA codes are added to LastPass Authenticator, simply download a new export and encrypt it again.
 
 ## Roadmap
 
 * Implement downloading export file in this tool so we no longer need to rely on a completely different environment (python) to be installed as well.
+
+## FAQ
+
+1. **Q: Why can't I pass the password as an argument like `2fa find -i /path/to/export.json -f <searchstring> --password supers3cret`?**<br> 
+  A: Because that would store your password in your terminal's history which is a security risk. Also because it prevents using this tool non-interactively (which could be dangers when some malicious code tries to run this tool unseen in the background).
 
 ## License
 
