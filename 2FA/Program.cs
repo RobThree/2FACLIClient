@@ -21,7 +21,7 @@ public class Program
         var fileOption = new Option<FileInfo>("--file", "The TOTP file.") { IsRequired = true };
         fileOption.AddAlias("-i");
 
-        var findOption = new Option<string>("--find", "Search string.") { IsRequired = true };
+        var findOption = new Option<string?>("--find", "Search string.") { IsRequired = false };
         findOption.AddAlias("-f");
 
         var rootCommand = new RootCommand("LastPass 2FA CLI authenticator");
@@ -56,21 +56,30 @@ public class Program
         }
     }
 
-    private static void Find(FileInfo secretsFile, string find)
+    private static void Find(FileInfo secretsFile, string? find)
     {
         var dp = new AesDataProtector();
         var password = ReadPassword("Password");
         var json = dp.DecryptFile(secretsFile.FullName, password);
-        var accounts = JsonSerializer.Deserialize<TwoFASecretsFile>(json)!.Accounts.Where(account => IsMatch(account, find));
+        var accounts = JsonSerializer.Deserialize<TwoFASecretsFile>(json)!.Accounts.ToArray();
+            
+        var matchingaccounts = accounts.Where(account => IsMatch(account, find))
+            .OrderBy(account => account.IssuerName)
+            .ThenBy(account => account.UserName)
+            .ThenBy(account => account.CreationDate)
+            .ToArray();
+        var maxlen = matchingaccounts.Max(a=>(a.IssuerName ?? string.Empty).Length);
 
-        foreach (var account in accounts)
+        Console.WriteLine($"{accounts.Length} accounts in store");
+        foreach (var account in matchingaccounts)
         {
             var options = new TwoFAOptions { Digits = account.Digits, Period = account.TimeStep, Algorithm = Enum.Parse<Algorithm>(account.Algorithm) };
             var calc = _calculators.GetOrAdd(options, o => new TwoFACalculator(Options.Create(o)));
             Console.WriteLine(
-                $"{account.UserName}@{account.IssuerName} ({account.OriginalUserName}@{account.OriginalIssuerName}) {calc.GetCode(account.Secret)}"
+                $"{account.IssuerName.PadRight(maxlen)} : {calc.GetCode(account.Secret),-10} ({account.UserName}, {account.OriginalIssuerName})"
             );
         }
+        Console.WriteLine($"{matchingaccounts.Length} accounts matched");
     }
 
     private static void WriteConsoleError(string error)
@@ -81,8 +90,9 @@ public class Program
         Console.ForegroundColor = color;
     }
 
-    private static bool IsMatch(TwoFAAccount account, string find, StringComparison stringComparison = StringComparison.OrdinalIgnoreCase)
-        => account.UserName.Contains(find, stringComparison)
+    private static bool IsMatch(TwoFAAccount account, string? find, StringComparison stringComparison = StringComparison.OrdinalIgnoreCase)
+        => find is null
+            || account.UserName.Contains(find, stringComparison)
             || account.IssuerName.Contains(find, stringComparison)
             || account.OriginalUserName.Contains(find, stringComparison)
             || account.OriginalIssuerName.Contains(find, stringComparison);
