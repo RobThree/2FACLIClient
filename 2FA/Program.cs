@@ -1,9 +1,10 @@
-﻿using Microsoft.Extensions.Options;
+﻿using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Options;
 using System.Collections.Concurrent;
 using System.CommandLine;
+using System.CommandLine.Binding;
 using System.CommandLine.Builder;
 using System.CommandLine.Parsing;
-using System.Data;
 using System.Text;
 using System.Text.Json;
 using TwoFA.Encryption;
@@ -17,13 +18,23 @@ public class Program
 
     private static int Main(string[] args)
     {
-        var dp = new AesDataProtector();
-        var fileOption = new Option<FileInfo>("--file", "The TOTP file.") { IsRequired = true };
+        var configprovider = new ConfigurationBuilder()
+            .SetBasePath(AppContext.BaseDirectory)
+            .AddJsonFile("appsettings.json")
+            .AddUserSecrets<Program>()
+            .Build();
+
+        var mainoptions = new MainOptions();
+        configprovider.Bind("Main", mainoptions);
+
+        var fileOption = new Option<FileInfo>("--file", "The TOTP file.");
         fileOption.AddAlias("-i");
+        if (!string.IsNullOrEmpty(mainoptions.SecretsFile))
+            fileOption.SetDefaultValue(new FileInfo(mainoptions.SecretsFile));
 
-        var findOption = new Option<string?>("--find", "Search string.") { IsRequired = false };
+        var findOption = new Option<string?>("--find", "Search string.");
         findOption.AddAlias("-f");
-
+        
         var rootCommand = new RootCommand("LastPass 2FA CLI authenticator");
 
         var encryptcommand = new Command("encrypt", "Encrypts a given TOTP password file.") { fileOption };
@@ -123,4 +134,15 @@ public class Program
 
         return password.ToString();
     }
+}
+
+public class ServiceProviderBinder : BinderBase<IServiceProvider>
+{
+    private readonly IServiceProvider _serviceprovider;
+
+    public ServiceProviderBinder(IServiceProvider serviceProvider)
+        => _serviceprovider = serviceProvider ?? throw new ArgumentNullException(nameof(serviceProvider));
+
+    protected override IServiceProvider GetBoundValue(BindingContext bindingContext)
+        => _serviceprovider;
 }
