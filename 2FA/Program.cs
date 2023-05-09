@@ -24,7 +24,7 @@ public class Program
         var findOption = new Option<string>("--find", "Search string.") { IsRequired = true };
         findOption.AddAlias("-f");
 
-        var rootCommand = new RootCommand("CLI TOTP authenticator");
+        var rootCommand = new RootCommand("LastPass 2FA CLI authenticator");
 
         var encryptcommand = new Command("encrypt", "Encrypts a given TOTP password file.") { fileOption };
         encryptcommand.SetHandler(Encrypt, fileOption);

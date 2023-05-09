@@ -2,8 +2,7 @@
   "profiles": {
     "2FA": {
       "commandName": "Project",
-      "commandLineArgs": "find -i export.json -f tweak"
-      //"commandLineArgs": "encrypt -i export.json"
+      "commandLineArgs": "-h"
     }
   }
 }
