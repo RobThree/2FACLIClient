@@ -6,14 +6,10 @@
 * Use [Lastpass Authenticator Export](https://github.com/dmaasland/lastpass-authenticator-export) ([fork here](https://github.com/RobThree/lastpass-authenticator-export/tree/main)) to download the secrets file (`export.json`).
 * Place the `export.json` file in a known directory.
 * Encrypt the `export.json` file with the following command:<br>
-
-    `2fa encrypt -i /path/to/export.json`
-  
+    `2fa encrypt -i /path/to/export.json`<br>
   You will be asked for a password and to confirm the entered password. Then, this command will encrypt the `export.json` file **in-place** (i.e. the file is overwritten with it's encrypted equivalent).
 * From now on you can lookup 2fa codes:<br>
-
-    `2fa find -i /path/to/export.json -f <searchstring>`
-
+    `2fa find -i /path/to/export.json -f <searchstring>`<br>
     You will be asked for the password used to encrypt the file in the previous step and will then be shown all accounts matching `<searchstring>` with the current TOTP code.
 
 Whenever new 2FA codes are added to LastPass Authenticator, simply download a new export and encrypt it again.
