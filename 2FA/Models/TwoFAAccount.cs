@@ -3,7 +3,7 @@ using TwoFA.Converters;
 
 namespace TwoFA.Models;
 
-public record TwoFAAccount
+internal record TwoFAAccount
 {
     [JsonPropertyName("algorithm")]
     public required string Algorithm { get; init; }

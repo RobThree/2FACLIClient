@@ -1,6 +1,6 @@
 ﻿namespace TwoFA;
 
-public enum Algorithm
+internal enum Algorithm
 {
     SHA1,
     SHA256,

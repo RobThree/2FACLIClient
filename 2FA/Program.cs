@@ -11,9 +11,11 @@ using TwoFA.Models;
 
 namespace TwoFA;
 
-public class Program
+internal class Program
 {
     private static readonly ConcurrentDictionary<TwoFAOptions, TwoFACalculator> _calculators = new();
+    private static readonly AesDataProtectorOptions _vaultoptions = new();
+    private static readonly MainOptions _mainoptions = new();
 
     private static int Main(string[] args)
     {
@@ -23,14 +25,14 @@ public class Program
             .AddUserSecrets<Program>()
             .Build();
 
-        var mainoptions = new MainOptions();
-        configprovider.Bind("Main", mainoptions);
+        configprovider.Bind("Main", _mainoptions);
+        configprovider.Bind("Vault", _vaultoptions);
 
         var fileOption = new Option<FileInfo>("--file", "The TOTP file");
         fileOption.AddAlias("-i");
-        if (!string.IsNullOrEmpty(mainoptions.SecretsFile))
+        if (!string.IsNullOrEmpty(_mainoptions.VaultFile))
         {
-            fileOption.SetDefaultValue(new FileInfo(mainoptions.SecretsFile));
+            fileOption.SetDefaultValue(new FileInfo(_mainoptions.VaultFile));
         }
 
         var findOption = new Option<string?>("--find", "Search string");
@@ -62,26 +64,26 @@ public class Program
             .Invoke(args);
     }
 
-    private static async Task Refresh(FileInfo secretsFile, string username, string? otp)
+    private static async Task Refresh(FileInfo vaultFile, string username, string? otp)
     {
-        var lppassword = ReadPassword("Lastpass master password");
-        var dp = new AesDataProtector();
+        var lppassword = ReadPassword("LastPass master password");
+        var dp = new AesDataProtector(Options.Create(_vaultoptions));
         var lpclient = new LastPassMFABackupDownloader();
         var mfadata = await lpclient.DownloadAsync(username, lppassword, otp).ConfigureAwait(false);
         Console.WriteLine("MFA Backup successfully retrieved");
         var password = ReadPassword("Local vault password");
         if (ReadPassword("Confirm local vault password") == password)
         {
-            dp.SaveEncrypted(secretsFile.FullName, mfadata, password);
+            dp.SaveEncrypted(vaultFile.FullName, mfadata, password);
         }
         Console.WriteLine("Local vault updated / refreshed");
     }
 
-    private static void List(FileInfo secretsFile, string? find)
+    private static void List(FileInfo vaultFile, string? find)
     {
-        var dp = new AesDataProtector();
+        var dp = new AesDataProtector(Options.Create(_vaultoptions));
         var password = ReadPassword("Password");
-        var json = dp.LoadEncrypted(secretsFile.FullName, password);
+        var json = dp.LoadEncrypted(vaultFile.FullName, password);
         var accounts = JsonSerializer.Deserialize<TwoFASecretsFile>(json)!.Accounts.ToArray();
 
         var matchingaccounts = accounts.Where(account => IsMatch(account, find))

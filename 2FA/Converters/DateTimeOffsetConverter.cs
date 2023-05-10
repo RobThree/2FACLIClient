@@ -3,7 +3,7 @@ using System.Text.Json.Serialization;
 
 namespace TwoFA.Converters;
 
-public class DateTimeOffsetConverter : JsonConverter<DateTimeOffset>
+internal class DateTimeOffsetConverter : JsonConverter<DateTimeOffset>
 {
     public override DateTimeOffset Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
         => DateTimeOffset.FromUnixTimeSeconds(reader.GetInt64());

@@ -6,7 +6,7 @@ using System.Xml.Serialization;
 
 namespace TwoFA;
 
-public class LastPassMFABackupDownloader
+internal class LastPassMFABackupDownloader
 {
     private readonly string _hosturl;
 
@@ -58,8 +58,8 @@ public class LastPassMFABackupDownloader
 
     private static Login CreateHash(string username, string password, int iterations)
     {
-        var key = Rfc2898DeriveBytes.Pbkdf2(Encoding.UTF8.GetBytes(password), Encoding.UTF8.GetBytes(username), iterations, HashAlgorithmName.SHA256, 32);
-        var loginhash = Rfc2898DeriveBytes.Pbkdf2(key, Encoding.UTF8.GetBytes(password), 1, HashAlgorithmName.SHA256, 32);
+        var key = Rfc2898DeriveBytes.Pbkdf2(Encoding.Default.GetBytes(password), Encoding.Default.GetBytes(username), iterations, HashAlgorithmName.SHA256, 32);
+        var loginhash = Rfc2898DeriveBytes.Pbkdf2(key, Encoding.Default.GetBytes(password), 1, HashAlgorithmName.SHA256, 32);
         return new(key, Convert.ToHexString(loginhash).ToLowerInvariant());
     }
 
@@ -76,7 +76,7 @@ public class LastPassMFABackupDownloader
     );
 
     [XmlRoot("ok")]
-    public record LoginResult(
+    public record LoginResult(  // Must be public for XML Serializer
         [property: XmlAttribute("token")] string Token,
         [property: XmlAttribute("sessionid")] string SessionId
     )
@@ -84,10 +84,7 @@ public class LastPassMFABackupDownloader
         public LoginResult() : this(string.Empty, string.Empty) { }
     }
 
-    private record Login(
-        byte[] Key,
-        string Hash
-    );
+    private record Login(byte[] Key, string Hash);
 
     internal record LoginRequest(
         [property: AliasAs("username")] string Username,
@@ -96,10 +93,12 @@ public class LastPassMFABackupDownloader
         [property: AliasAs("otp")] string? OTP
     )
     {
+#pragma warning disable CA1822 // Mark members as static
         [AliasAs("method")] public string Method => "mobile";
         [AliasAs("web")] public int Web => 1;
         [AliasAs("xml")] public int Xml => 1;
         [AliasAs("imei")] public string IMEI => "LastPassAuthExport";
+#pragma warning restore CA1822 // Mark members as static
     }
 
     internal interface ILastPass

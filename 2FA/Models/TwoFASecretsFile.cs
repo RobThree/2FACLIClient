@@ -3,7 +3,7 @@ using TwoFA.Converters;
 
 namespace TwoFA.Models;
 
-public record TwoFASecretsFile
+internal record TwoFASecretsFile
 {
     [JsonPropertyName("localDeviceId")]
     [JsonConverter(typeof(GUIDConverter))]

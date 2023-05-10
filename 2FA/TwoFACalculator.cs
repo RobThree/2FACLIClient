@@ -3,7 +3,7 @@ using System.Security.Cryptography;
 
 namespace TwoFA;
 
-public partial class TwoFACalculator
+internal partial class TwoFACalculator
 {
     private readonly TwoFAOptions _options;
 

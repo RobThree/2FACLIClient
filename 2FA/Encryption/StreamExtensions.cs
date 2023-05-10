@@ -2,9 +2,19 @@
 
 internal static class StreamExtensions
 {
+    /// <summary>
+    /// Reads a number of bytes from the stream. The number of bytes is determined by a prefixed int32 value.
+    /// </summary>
+    /// <param name="stream">The <see cref="Stream"/> to read from.</param>
+    /// <returns>A <see cref="Span{byte}"/> read from the stream.</returns>
     public static Span<byte> ReadLengthEncodedBytes(this Stream stream)
         => stream.ReadBytes(stream.ReadInt());
 
+    /// <summary>
+    /// Writes a number of bytes to the stream. The total length is written as an int32, followed by the actual value.
+    /// </summary>
+    /// <param name="stream">The <see cref="Stream"/> to write to.</param>
+    /// <param name="value">The value to write.</param>
     public static void WriteLengthEncodedBytes(this Stream stream, Span<byte> value)
     {
         stream.Write(BitConverter.GetBytes(value.Length));

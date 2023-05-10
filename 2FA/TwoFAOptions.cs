@@ -1,6 +1,6 @@
 ﻿namespace TwoFA;
 
-public record TwoFAOptions
+internal record TwoFAOptions
 {
     public Algorithm Algorithm { get; init; } = Algorithm.SHA1;
     public int Digits { get; init; } = 6;
