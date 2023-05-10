@@ -6,7 +6,7 @@ using System.Xml.Serialization;
 
 namespace TwoFA;
 
-internal class LastPassMFABackupDownloader
+public class LastPassMFABackupDownloader
 {
     private readonly string _hosturl;
 
@@ -34,7 +34,7 @@ internal class LastPassMFABackupDownloader
         }
         catch (Exception ex)
         {
-            throw new Exception("Failed to download MFA Vault", ex);
+            throw new Exception($"Failed to download MFA Vault ({ex.Message})");
         }
     }
 

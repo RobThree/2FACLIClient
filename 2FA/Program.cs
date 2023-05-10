@@ -72,7 +72,13 @@ internal class Program
         var mfadata = await lpclient.DownloadAsync(username, lppassword, otp).ConfigureAwait(false);
         Console.WriteLine("MFA Backup successfully retrieved");
         var password = ReadPassword("Local vault password");
-        if (ReadPassword("Confirm local vault password") == password)
+
+        if (password == lppassword)
+        {
+            WriteConsoleWarning("Warning: it is NOT recommended to have your local vault password the same as your LastPass master password!");
+        }
+
+        if (password == lppassword || ReadPassword("Confirm local vault password") == password)
         {
             dp.SaveEncrypted(vaultFile.FullName, mfadata, password);
         }
@@ -105,12 +111,15 @@ internal class Program
         Console.WriteLine($"{matchingaccounts.Length} accounts matched");
     }
 
-    private static void WriteConsoleError(string error)
+    private static void WriteConsoleError(string error) => WriteConsoleColor(error, ConsoleColor.Red);
+    private static void WriteConsoleWarning(string warning) => WriteConsoleColor(warning, ConsoleColor.Yellow);
+
+    private static void WriteConsoleColor(string text, ConsoleColor color)
     {
-        var color = Console.ForegroundColor;
-        Console.ForegroundColor = ConsoleColor.Red;
-        Console.WriteLine(error);
+        var oldcolor = Console.ForegroundColor;
         Console.ForegroundColor = color;
+        Console.WriteLine(text);
+        Console.ForegroundColor = oldcolor;
     }
 
     private static bool IsMatch(TwoFAAccount account, string? find, StringComparison stringComparison = StringComparison.OrdinalIgnoreCase)
