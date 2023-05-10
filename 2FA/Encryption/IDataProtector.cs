@@ -2,6 +2,6 @@
 
 public interface IDataProtector
 {
-    void EncryptFile(string path, string password);
-    string DecryptFile(string path, string password);
+    void SaveEncrypted(string path, string data, string password);
+    string LoadEncrypted(string path, string password);
 }

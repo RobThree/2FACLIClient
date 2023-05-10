@@ -21,20 +21,14 @@ public class AesDataProtector : IDataProtector
         _hashalgorithmname = hashAlgorithmName;
     }
 
-    public void EncryptFile(string path, string password)
+    public void SaveEncrypted(string path, string data, string password)
     {
-        if (IsFileEncrypted(path))
-        {
-            throw new InvalidOperationException("Secrets file appears to be already encrypted");
-        }
-
         var salt = RandomNumberGenerator.GetBytes(_saltlen);    // Generate random salt
 
         using var aes = Aes.Create();
         aes.Key = GetPasswordDerivedBytes(password, salt);      // Generate key based on password with salt
 
-        var tmpfile = Path.GetTempFileName();                   // Create tempfile
-        using var fs = new FileStream(tmpfile, FileMode.Open, FileAccess.Write);
+        using var fs = File.Create(path);
         fs.Write(_magicheader);                                 // Write magic header
         fs.WriteLengthEncodedBytes(aes.IV);                     // Write IV
         fs.WriteLengthEncodedBytes(salt);                       // Write salt
@@ -42,24 +36,26 @@ public class AesDataProtector : IDataProtector
         // Write the rest of the file as the AES encrypted version of the json file
         using var encryptor = aes.CreateEncryptor(aes.Key, aes.IV);
         using var cryptoStream = new CryptoStream(fs, encryptor, CryptoStreamMode.Write);
-        using (var streamWriter = new StreamWriter(cryptoStream))
-        {
-            streamWriter.Write(File.ReadAllText(path));
-        }
-        // Overwrite input file with contents of temp file
-        File.Move(tmpfile, path, true);
+        using var streamWriter = new StreamWriter(cryptoStream);
+        streamWriter.Write(data);
     }
 
-    public string DecryptFile(string path, string password)
+    public string LoadEncrypted(string path, string password)
     {
-        if (!IsFileEncrypted(path))
-        {
-            throw new InvalidOperationException("Secrets file does not appear to be encrypted");
-        }
-
         using var fs = File.OpenRead(path);
 
-        fs.Seek(_magicheader.Length, SeekOrigin.Begin);         // Skip magic header
+        // Check magic header
+        var header = fs.ReadBytes(_magicheader.Length);
+        if (!_magicheader.SequenceEqual(header.ToArray()))
+        {
+            throw new InvalidOperationException("Secrets file does not appear to be valid");
+        }
+        var version = header[_magicheader.Length - 1];
+        var expectedversion = 1;
+        if (version != expectedversion)
+        {
+            throw new InvalidOperationException($"Incompatible vault version {version}, expected {expectedversion}");
+        }
 
         var iv = fs.ReadLengthEncodedBytes().ToArray();         // Read IV
         var salt = fs.ReadLengthEncodedBytes().ToArray();       // Read salt
@@ -84,10 +80,4 @@ public class AesDataProtector : IDataProtector
 
     private byte[] GetPasswordDerivedBytes(string password, byte[] salt)
         => Rfc2898DeriveBytes.Pbkdf2(Encoding.Default.GetBytes(password), salt, _iterations, _hashalgorithmname, _derivedkeylength);
-
-    private static bool IsFileEncrypted(string path)
-    {
-        using var fs = File.OpenRead(path);
-        return _magicheader.SequenceEqual(fs.ReadBytes(_magicheader.Length).ToArray());
-    }
 }

@@ -2,7 +2,6 @@
 using Microsoft.Extensions.Options;
 using System.Collections.Concurrent;
 using System.CommandLine;
-using System.CommandLine.Binding;
 using System.CommandLine.Builder;
 using System.CommandLine.Parsing;
 using System.Text;
@@ -20,31 +19,41 @@ public class Program
     {
         var configprovider = new ConfigurationBuilder()
             .SetBasePath(AppContext.BaseDirectory)
-            .AddJsonFile("appsettings.json")
+            .AddJsonFile("appsettings.json", true)
             .AddUserSecrets<Program>()
             .Build();
 
         var mainoptions = new MainOptions();
         configprovider.Bind("Main", mainoptions);
 
-        var fileOption = new Option<FileInfo>("--file", "The TOTP file.");
+        var fileOption = new Option<FileInfo>("--file", "The TOTP file");
         fileOption.AddAlias("-i");
         if (!string.IsNullOrEmpty(mainoptions.SecretsFile))
+        {
             fileOption.SetDefaultValue(new FileInfo(mainoptions.SecretsFile));
+        }
 
-        var findOption = new Option<string?>("--find", "Search string.");
+        var findOption = new Option<string?>("--find", "Search string");
         findOption.AddAlias("-f");
-        
+
+        var usernameOption = new Option<string>("--username", "Username (emailaddress)") { IsRequired = true };
+        usernameOption.AddAlias("-u");
+
+        var otpOption = new Option<string>("--otp", "Current OTP code");
+        otpOption.AddAlias("-o");
+
         var rootCommand = new RootCommand("LastPass 2FA CLI authenticator");
 
-        var encryptcommand = new Command("encrypt", "Encrypts a given TOTP password file.") { fileOption };
-        encryptcommand.SetHandler(Encrypt, fileOption);
+        var refreshcommand = new Command("refresh", "Get or refresh TOTP password vault") { fileOption, usernameOption, otpOption };
+        refreshcommand.AddAlias("update");
+        refreshcommand.AddAlias("download");
+        refreshcommand.SetHandler(Refresh, fileOption, usernameOption, otpOption);
 
-        var findcommand = new Command("find", "Finds and shows matching TOTP codes") { fileOption, findOption };
-        findcommand.SetHandler(Find, fileOption, findOption);
+        var listcommand = new Command("list", "Lists accounts and matching TOTP codes") { fileOption, findOption };
+        listcommand.SetHandler(List, fileOption, findOption);
 
-        rootCommand.AddCommand(encryptcommand);
-        rootCommand.AddCommand(findcommand);
+        rootCommand.AddCommand(refreshcommand);
+        rootCommand.AddCommand(listcommand);
 
         return new CommandLineBuilder(rootCommand)
             .UseDefaults()
@@ -53,33 +62,34 @@ public class Program
             .Invoke(args);
     }
 
-    private static void Encrypt(FileInfo secretsFile)
+    private static async Task Refresh(FileInfo secretsFile, string username, string? otp)
     {
+        var lppassword = ReadPassword("Lastpass master password");
         var dp = new AesDataProtector();
-        var password = ReadPassword("Password");
-        if (ReadPassword("Confirm password") == password)
+        var lpclient = new LastPassMFABackupDownloader();
+        var mfadata = await lpclient.DownloadAsync(username, lppassword, otp).ConfigureAwait(false);
+        Console.WriteLine("MFA Backup successfully retrieved");
+        var password = ReadPassword("Local vault password");
+        if (ReadPassword("Confirm local vault password") == password)
         {
-            dp.EncryptFile(secretsFile.FullName, password);
+            dp.SaveEncrypted(secretsFile.FullName, mfadata, password);
         }
-        else
-        {
-            WriteConsoleError("Password and confirmed password do not match.\nFile was not encrypted");
-        }
+        Console.WriteLine("Local vault updated / refreshed");
     }
 
-    private static void Find(FileInfo secretsFile, string? find)
+    private static void List(FileInfo secretsFile, string? find)
     {
         var dp = new AesDataProtector();
         var password = ReadPassword("Password");
-        var json = dp.DecryptFile(secretsFile.FullName, password);
+        var json = dp.LoadEncrypted(secretsFile.FullName, password);
         var accounts = JsonSerializer.Deserialize<TwoFASecretsFile>(json)!.Accounts.ToArray();
-            
+
         var matchingaccounts = accounts.Where(account => IsMatch(account, find))
             .OrderBy(account => account.IssuerName)
             .ThenBy(account => account.UserName)
             .ThenBy(account => account.CreationDate)
             .ToArray();
-        var maxlen = matchingaccounts.Max(a=>(a.IssuerName ?? string.Empty).Length);
+        var maxlen = matchingaccounts.Max(a => (a.IssuerName ?? string.Empty).Length);
 
         Console.WriteLine($"{accounts.Length} accounts in store");
         foreach (var account in matchingaccounts)
@@ -134,15 +144,4 @@ public class Program
 
         return password.ToString();
     }
-}
-
-public class ServiceProviderBinder : BinderBase<IServiceProvider>
-{
-    private readonly IServiceProvider _serviceprovider;
-
-    public ServiceProviderBinder(IServiceProvider serviceProvider)
-        => _serviceprovider = serviceProvider ?? throw new ArgumentNullException(nameof(serviceProvider));
-
-    protected override IServiceProvider GetBoundValue(BindingContext bindingContext)
-        => _serviceprovider;
 }
