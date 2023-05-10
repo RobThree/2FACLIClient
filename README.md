@@ -36,6 +36,10 @@ Whenever new 2FA codes are added to LastPass Authenticator, simply refresh your 
 
 Note that the commands `download`, `refresh` and `update` are synonyms for the same action.
 
+## Demo
+
+![Demo](demo.gif)
+
 ## Credits
 
 MFA vault download based on Donny Maasland's [Lastpass Authenticator Export](https://github.com/dmaasland/lastpass-authenticator-export).
