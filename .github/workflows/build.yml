@@ -11,7 +11,7 @@ jobs:
     name: ci-${{matrix.os}}
     strategy:
       matrix:
-        kind: ['linux', 'windows', 'macos']
+        kind: ['linux', 'windows', 'macos-x64','macos-arm64']
         include:
           - kind: linux
             os: ubuntu-latest
@@ -19,10 +19,10 @@ jobs:
           - kind: windows
             os: windows-latest
             target: win-x64
-          - kind: macos
+          - kind: macos-x64
             os: macos-latest
             target: osx-x64
-          - kind: macos
+          - kind: macos-arm64
             os: macos-latest
             target: osx-arm64
     runs-on: ${{ matrix.os }}
