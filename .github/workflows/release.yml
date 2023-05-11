@@ -10,7 +10,7 @@ jobs:
     name: Release
     strategy:
       matrix:
-        kind: ['linux', 'windows', 'macos-x64','macos-arm64']
+        kind: ['linux', 'windows']
         include:
           - kind: linux
             os: ubuntu-latest
@@ -18,12 +18,6 @@ jobs:
           - kind: windows
             os: windows-latest
             target: win-x64
-          - kind: macos-x64
-            os: macos-latest
-            target: osx-x64
-          - kind: macos-arm64
-            os: macos-latest
-            target: osx-arm64
     runs-on: ${{ matrix.os }}
     steps:
       - name: Checkout

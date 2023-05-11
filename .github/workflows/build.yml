@@ -11,7 +11,7 @@ jobs:
     name: ci-${{matrix.os}}
     strategy:
       matrix:
-        kind: ['linux', 'windows', 'macos-x64','macos-arm64']
+        kind: ['linux', 'windows']
         include:
           - kind: linux
             os: ubuntu-latest
@@ -19,12 +19,6 @@ jobs:
           - kind: windows
             os: windows-latest
             target: win-x64
-          - kind: macos-x64
-            os: macos-latest
-            target: osx-x64
-          - kind: macos-arm64
-            os: macos-latest
-            target: osx-arm64
     runs-on: ${{ matrix.os }}
     steps:
       - name: Checkout
@@ -39,7 +33,7 @@ jobs:
         run: dotnet restore
 
       - name: Build
-        run: dotnet build 2FA --runtime "${{ matrix.target }}" --configuration Release --no-restore --self-contained false
+        run: dotnet build 2FA --runtime ${{ matrix.target }} --configuration Release --no-restore --self-contained false
 
       - name: Test
         run: dotnet test --no-restore --verbosity normal
