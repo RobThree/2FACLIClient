@@ -46,7 +46,7 @@ jobs:
             # Pack to zip for Windows
             7z a -tzip "${release_name}.zip" "./artifacts/*"
           else
-            tar -Cczvf "${release_name}.tar.gz" "./artifacts"
+            (cd artifacts && tar -czvf "${release_name}.tar.gz" *)
           fi
 
           # Delete output directory
