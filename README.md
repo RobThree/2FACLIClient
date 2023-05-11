@@ -1,4 +1,4 @@
-# LastPass 2FA CLI authenticator
+# ![Logo](logo.png) LastPass 2FA CLI authenticator
 
 This commandline tool can be used on Windows, MacOS and Linux systems to get a 2FA TOTP code from the console or terminal. The secrets are downloaded from [lastpass.com](https://lastpass.com) and stored safely in an encrypted file (default `vault.dat`).
 
