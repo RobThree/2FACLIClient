@@ -42,7 +42,7 @@ MFA vault download based on Donny Maasland's [Lastpass Authenticator Export](htt
 
 ## FAQ
 
-**Q**: _Why can't I pass the password as an argument like `2fa list -f <searchstring> --password sup3rs3cr3t`?**_
+**Q**: _Why can't I pass the password as an argument like `2fa list -f <searchstring> --password sup3rs3cr3t`?_
 
 **A**: Because that would store your password in your terminal's history which is a security risk. Also because it prevents using this tool non-interactively (which could be dangerous when some malicious code tries to run this tool unseen in the background).
 
