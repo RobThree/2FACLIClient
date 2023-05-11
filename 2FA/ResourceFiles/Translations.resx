@@ -126,8 +126,14 @@
   <data name="CMD_ROOT" xml:space="preserve">
     <value>LastPass 2FA CLI authenticator</value>
   </data>
+  <data name="EX_DECRYPT_MFA_BACKUP_FAILED" xml:space="preserve">
+    <value>Failed to decrypt MFA backup</value>
+  </data>
   <data name="EX_FAILED_TO_INITIALIZE_HASHALGO" xml:space="preserve">
     <value>Failed to initialize hash algorithm '{0}'</value>
+  </data>
+  <data name="EX_FAILED_TO_RETRIEVE_ITERATIONS" xml:space="preserve">
+    <value>Failed to retrieve iterations</value>
   </data>
   <data name="EX_HASHALGORITHM_NOT_SUPPORTED" xml:space="preserve">
     <value>Hashalgorithm {0} not supported</value>
@@ -135,8 +141,11 @@
   <data name="EX_INCOMPATIBLE_VAULT_VERSION" xml:space="preserve">
     <value>Incompatible vault version {0}, expected version {1}</value>
   </data>
+  <data name="EX_LOGIN_FAILED" xml:space="preserve">
+    <value>Login failed</value>
+  </data>
   <data name="EX_MFA_BACKUP_DOWNLOAD_FAILED" xml:space="preserve">
-    <value>Failed to download MFA backup ({0})</value>
+    <value>Failed to download MFA backup</value>
   </data>
   <data name="EX_UNHANDLED" xml:space="preserve">
     <value>Unhandled exception: {0}</value>
@@ -159,6 +168,9 @@
   <data name="OPT_VAULT_FILE" xml:space="preserve">
     <value>TOTP vault file</value>
   </data>
+  <data name="OPT_VERBOSE" xml:space="preserve">
+    <value>Verbose</value>
+  </data>
   <data name="PROMPT_CONFIRM_LOCALVAULT_PWD" xml:space="preserve">
     <value>Confirm local vault password</value>
   </data>
@@ -174,11 +186,23 @@
   <data name="STATUS_ACCOUNTS_MATCHED" xml:space="preserve">
     <value>{0} accounts matched</value>
   </data>
+  <data name="STATUS_DECRYPTING_MFA_BACKUP" xml:space="preserve">
+    <value>Decrypting MFA backup...</value>
+  </data>
+  <data name="STATUS_DOWNLOADING_MFA_BACKUP" xml:space="preserve">
+    <value>Dowloading MFA backup...</value>
+  </data>
   <data name="STATUS_LOCALVAULT_UPDATED" xml:space="preserve">
     <value>Local TOTP vault updated</value>
   </data>
+  <data name="STATUS_LOGGING_IN" xml:space="preserve">
+    <value>Logging in...</value>
+  </data>
   <data name="STATUS_MFA_BACKUP_DOWNLOADED" xml:space="preserve">
     <value>MFA backup successfully downloaded</value>
+  </data>
+  <data name="STATUS_RETRIEVING_ITERATIONS" xml:space="preserve">
+    <value>Retrieving iterations...</value>
   </data>
   <data name="WARN_LPMASTERPASSWD_SAME" xml:space="preserve">
     <value>Warning: it is STRONGLY discouraged to use your LastPass master password for your local TOTP vault</value>

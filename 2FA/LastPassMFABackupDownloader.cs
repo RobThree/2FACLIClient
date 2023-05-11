@@ -7,45 +7,57 @@ using TwoFA.ResourceFiles;
 
 namespace TwoFA;
 
-public class LastPassMFABackupDownloadFailedException : Exception
-{
-    public LastPassMFABackupDownloadFailedException(string message, Exception? innerException)
-        : base(message, innerException) { }
-}
-
 public class LastPassMFABackupDownloader
 {
+    public const string DEFAULTBASEADDRESS = "https://lastpass.com";
     private readonly string _hosturl;
 
     public LastPassMFABackupDownloader()
-        : this("https://lastpass.com") { }
+        : this(DEFAULTBASEADDRESS) { }
 
     public LastPassMFABackupDownloader(string hostUrl)
         => _hosturl = hostUrl ?? throw new ArgumentNullException(nameof(hostUrl));
 
     public async Task<string> DownloadAsync(string username, string password, string? otp)
     {
-        try
-        {
-            var client = RestService.For<ILastPass>(_hosturl);
-            var iterations = await client.GetIterations(username).ConfigureAwait(false);
-            var login = CreateHash(username, password, iterations);
-            var loginresult = ParseLoginResult(await client.Login(new LoginRequest(
-                username,
-                login.Hash,
-                iterations,
-                otp
-            )));
-            var mfadata = await client.GetMFABackup(loginresult.Token, loginresult.SessionId).ConfigureAwait(false);
-            return DecodeMFA(mfadata, login.Key);
-        }
-        catch (Exception ex)
-        {
-            throw new LastPassMFABackupDownloadFailedException(string.Format(Translations.EX_MFA_BACKUP_DOWNLOAD_FAILED, ex.Message), ex);
-        }
+        var client = RestService.For<ILastPassClient>(_hosturl);
+
+        //var iterations = await GetIterations(client, username).ConfigureAwait(false);
+        var iterations = await ExecuteStep(
+            Translations.STATUS_RETRIEVING_ITERATIONS,
+            () => client.GetIterations(username),
+            (e) => new LastPassMFABackupDownloaderException(Translations.EX_FAILED_TO_RETRIEVE_ITERATIONS, e)
+        ).ConfigureAwait(false);
+
+        var login = CreateHash(username, password, iterations);
+
+        var loginresult = ParseLoginResult(await ExecuteStep(
+            Translations.STATUS_LOGGING_IN,
+            () => client.Login(new LoginRequest(username, login.Hash, iterations, otp)),
+            (e) => new LastPassMFABackupDownloaderException(Translations.EX_LOGIN_FAILED, e)
+        ).ConfigureAwait(false));
+
+        var mfadata = await ExecuteStep(
+            Translations.STATUS_DOWNLOADING_MFA_BACKUP,
+            () => client.GetMFABackupAsync(loginresult.Token, loginresult.SessionId),
+            (e) => new LastPassMFABackupDownloaderException(Translations.EX_MFA_BACKUP_DOWNLOAD_FAILED, e)
+        ).ConfigureAwait(false);
+
+        return await ExecuteStep(
+            Translations.STATUS_DECRYPTING_MFA_BACKUP,
+            () => DecryptMFABackupAsync(mfadata, login.Key),
+            (e) => new LastPassMFABackupDownloaderException(Translations.EX_DECRYPT_MFA_BACKUP_FAILED, e)
+        ).ConfigureAwait(false);
     }
 
-    private static string DecodeMFA(MFAData mfaData, byte[] key)
+    // Displays a status and then executes a given task, wrapped in a try/catch statement
+    private static async Task<T> ExecuteStep<T>(string status, Func<Task<T>> valueFactory, Func<Exception, Exception> exceptionFactory)
+    {
+        Console.WriteLine(status);
+        try { return await valueFactory().ConfigureAwait(false); } catch (Exception ex) { throw exceptionFactory(ex); }
+    }
+
+    private static async Task<string> DecryptMFABackupAsync(MFAData mfaData, byte[] key)
     {
         var dataparts = mfaData.UserData.Split('|');
         var iv = Convert.FromBase64String(dataparts[0].Split('!')[1]);
@@ -60,7 +72,7 @@ public class LastPassMFABackupDownloader
         using var ms = new MemoryStream(ciphertext);
         using var cryptoStream = new CryptoStream(ms, decryptor, CryptoStreamMode.Read);
         using var streamReader = new StreamReader(cryptoStream);
-        return streamReader.ReadToEnd();
+        return await streamReader.ReadToEndAsync().ConfigureAwait(false);
     }
 
     private static Login CreateHash(string username, string password, int iterations)
@@ -108,7 +120,7 @@ public class LastPassMFABackupDownloader
 #pragma warning restore CA1822 // Mark members as static
     }
 
-    internal interface ILastPass
+    internal interface ILastPassClient
     {
         [Get("/iterations.php")]
         internal Task<int> GetIterations(string email);
@@ -117,6 +129,12 @@ public class LastPassMFABackupDownloader
         internal Task<string> Login([Body(BodySerializationMethod.UrlEncoded)] LoginRequest loginRequest);
 
         [Get("/lmiapi/authenticator/backup")]
-        internal Task<MFAData> GetMFABackup([Header("X-CSRF-TOKEN")] string token, [Header("X-SESSION-ID")] string sessionid);
+        internal Task<MFAData> GetMFABackupAsync([Header("X-CSRF-TOKEN")] string token, [Header("X-SESSION-ID")] string sessionid);
     }
+}
+
+public class LastPassMFABackupDownloaderException : Exception
+{
+    public LastPassMFABackupDownloaderException(string message, Exception? innerException)
+        : base(message, innerException) { }
 }

@@ -88,11 +88,29 @@ namespace TwoFA.ResourceFiles {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Failed to decrypt MFA backup.
+        /// </summary>
+        internal static string EX_DECRYPT_MFA_BACKUP_FAILED {
+            get {
+                return ResourceManager.GetString("EX_DECRYPT_MFA_BACKUP_FAILED", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Failed to initialize hash algorithm &apos;{0}&apos;.
         /// </summary>
         internal static string EX_FAILED_TO_INITIALIZE_HASHALGO {
             get {
                 return ResourceManager.GetString("EX_FAILED_TO_INITIALIZE_HASHALGO", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Failed to retrieve iterations.
+        /// </summary>
+        internal static string EX_FAILED_TO_RETRIEVE_ITERATIONS {
+            get {
+                return ResourceManager.GetString("EX_FAILED_TO_RETRIEVE_ITERATIONS", resourceCulture);
             }
         }
         
@@ -115,7 +133,16 @@ namespace TwoFA.ResourceFiles {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Failed to download MFA backup ({0}).
+        ///   Looks up a localized string similar to Login failed.
+        /// </summary>
+        internal static string EX_LOGIN_FAILED {
+            get {
+                return ResourceManager.GetString("EX_LOGIN_FAILED", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Failed to download MFA backup.
         /// </summary>
         internal static string EX_MFA_BACKUP_DOWNLOAD_FAILED {
             get {
@@ -187,6 +214,15 @@ namespace TwoFA.ResourceFiles {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Verbose.
+        /// </summary>
+        internal static string OPT_VERBOSE {
+            get {
+                return ResourceManager.GetString("OPT_VERBOSE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Confirm local vault password.
         /// </summary>
         internal static string PROMPT_CONFIRM_LOCALVAULT_PWD {
@@ -232,6 +268,24 @@ namespace TwoFA.ResourceFiles {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Decrypting MFA backup....
+        /// </summary>
+        internal static string STATUS_DECRYPTING_MFA_BACKUP {
+            get {
+                return ResourceManager.GetString("STATUS_DECRYPTING_MFA_BACKUP", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Dowloading MFA backup....
+        /// </summary>
+        internal static string STATUS_DOWNLOADING_MFA_BACKUP {
+            get {
+                return ResourceManager.GetString("STATUS_DOWNLOADING_MFA_BACKUP", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Local TOTP vault updated.
         /// </summary>
         internal static string STATUS_LOCALVAULT_UPDATED {
@@ -241,11 +295,29 @@ namespace TwoFA.ResourceFiles {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Logging in....
+        /// </summary>
+        internal static string STATUS_LOGGING_IN {
+            get {
+                return ResourceManager.GetString("STATUS_LOGGING_IN", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to MFA backup successfully downloaded.
         /// </summary>
         internal static string STATUS_MFA_BACKUP_DOWNLOADED {
             get {
                 return ResourceManager.GetString("STATUS_MFA_BACKUP_DOWNLOADED", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Retrieving iterations....
+        /// </summary>
+        internal static string STATUS_RETRIEVING_ITERATIONS {
+            get {
+                return ResourceManager.GetString("STATUS_RETRIEVING_ITERATIONS", resourceCulture);
             }
         }
         

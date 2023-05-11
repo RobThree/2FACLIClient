@@ -88,6 +88,7 @@ internal class Program
         var lpclient = new LastPassMFABackupDownloader();
         var mfadata = await lpclient.DownloadAsync(username, lppassword, otp).ConfigureAwait(false);
         Console.WriteLine(Translations.STATUS_MFA_BACKUP_DOWNLOADED);
+
         var password = ReadPassword(Translations.PROMPT_LOCALVAULT_PWD);
 
         if (password == lppassword)

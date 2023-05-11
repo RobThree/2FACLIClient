@@ -126,8 +126,14 @@
   <data name="CMD_ROOT" xml:space="preserve">
     <value>LastPass 2FA CLI authenticator</value>
   </data>
+  <data name="EX_DECRYPT_MFA_BACKUP_FAILED" xml:space="preserve">
+    <value>Decoderen MFA backup mislukt</value>
+  </data>
   <data name="EX_FAILED_TO_INITIALIZE_HASHALGO" xml:space="preserve">
     <value>Hashalgoritme '{0}' initialiseren mislukt</value>
+  </data>
+  <data name="EX_FAILED_TO_RETRIEVE_ITERATIONS" xml:space="preserve">
+    <value>Ophalen iteraties mislukt</value>
   </data>
   <data name="EX_HASHALGORITHM_NOT_SUPPORTED" xml:space="preserve">
     <value>Hashalgoritme {0} wordt niet ondersteund</value>
@@ -135,8 +141,11 @@
   <data name="EX_INCOMPATIBLE_VAULT_VERSION" xml:space="preserve">
     <value>Kluis versie {0} is niet compatibel, verwachtte versie {1}</value>
   </data>
+  <data name="EX_LOGIN_FAILED" xml:space="preserve">
+    <value>Login mislukt</value>
+  </data>
   <data name="EX_MFA_BACKUP_DOWNLOAD_FAILED" xml:space="preserve">
-    <value>Fout bij downloaden MFA backup ({0})</value>
+    <value>Fout bij downloaden MFA backup</value>
   </data>
   <data name="EX_UNHANDLED" xml:space="preserve">
     <value>Niet afgehandelde fout: {0}</value>
@@ -159,6 +168,9 @@
   <data name="OPT_VAULT_FILE" xml:space="preserve">
     <value>TOTP kluis bestand</value>
   </data>
+  <data name="OPT_VERBOSE" xml:space="preserve">
+    <value>Uitgebreide informatie tonen</value>
+  </data>
   <data name="PROMPT_CONFIRM_LOCALVAULT_PWD" xml:space="preserve">
     <value>Bevestig lokale kluis wachtwoord</value>
   </data>
@@ -174,11 +186,23 @@
   <data name="STATUS_ACCOUNTS_MATCHED" xml:space="preserve">
     <value>{0} accounts gevonden</value>
   </data>
+  <data name="STATUS_DECRYPTING_MFA_BACKUP" xml:space="preserve">
+    <value>Ontsleutelen MFA backup...</value>
+  </data>
+  <data name="STATUS_DOWNLOADING_MFA_BACKUP" xml:space="preserve">
+    <value>Dowloaden MFA backup...</value>
+  </data>
   <data name="STATUS_LOCALVAULT_UPDATED" xml:space="preserve">
     <value>Lokale TOTP kluis bijgewerkt</value>
   </data>
+  <data name="STATUS_LOGGING_IN" xml:space="preserve">
+    <value>Inloggen...</value>
+  </data>
   <data name="STATUS_MFA_BACKUP_DOWNLOADED" xml:space="preserve">
     <value>MFA backup succesvol gedownload</value>
+  </data>
+  <data name="STATUS_RETRIEVING_ITERATIONS" xml:space="preserve">
+    <value>Ophalen iteraties...</value>
   </data>
   <data name="WARN_LPMASTERPASSWD_SAME" xml:space="preserve">
     <value>Waarschuwing: Het wordt STERK afgeraden uw LastPass hoofdwachtwoord te gebruiken voor uw lokale TOTP kluis</value>
