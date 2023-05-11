@@ -56,5 +56,5 @@ jobs:
         uses: softprops/action-gh-release@v1
         with:
           files: |
-            "2facliclient*.zip"
-            "2facliclient*.tar.gz"
+            2facliclient*.zip
+            2facliclient*.tar.gz
