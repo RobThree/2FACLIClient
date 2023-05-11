@@ -21,10 +21,10 @@ jobs:
             target: win-x64
           - kind: macos-x64
             os: macos-latest
-            target: macos-x64
+            target: osx-x64
           - kind: macos-arm64
             os: macos-latest
-            target: macos-arm64
+            target: osx-arm64
     runs-on: ${{ matrix.os }}
     steps:
       - name: Checkout
