@@ -36,21 +36,21 @@ jobs:
         shell: bash
         run: |
           tag=$(git describe --tags --abbrev=0)
-          release_name="app-$tag-${{ matrix.target }}"
+          release_name="2facliclient-$tag-${{ matrix.target }}"
 
           # Build everything
-          dotnet publish 2FA --runtime "${{ matrix.target }}" -c Release --property:PublishDir="${release_name}" --self-contained false
+          dotnet publish 2FA --runtime "${{ matrix.target }}" -c Release --property:PublishDir="../artifacts" --self-contained false
 
           # Pack files
-          if [ "${{ matrix.target }}" == "win-x64" ]; then
+          if [[ "${{ matrix.target }}" == win-* ]]; then
             # Pack to zip for Windows
-            7z a -tzip "${release_name}.zip" "./${release_name}/*"
+            7z a -tzip "${release_name}.zip" "./artifacts/*"
           else
-            tar czvf "${release_name}.tar.gz" "${release_name}"
+            tar czvf "${release_name}.tar.gz" "./artifacts"
           fi
 
           # Delete output directory
-          rm -r "${release_name}"
+          rm -r "./artifacts"
 
       - name: Publish windows
         uses: actions/upload-artifact@v3
