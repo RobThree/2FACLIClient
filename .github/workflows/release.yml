@@ -38,7 +38,7 @@ jobs:
           release_name="app-$tag-${{ matrix.target }}"
 
           # Build everything
-          dotnet publish 2FA --runtime "${{ matrix.target }}" -c Release -o "${release_name}" --self-contained false
+          dotnet publish 2FA --runtime "${{ matrix.target }}" -c Release --property:PublishDir= "${release_name}" --self-contained false
 
           # Pack files
           if [ "${{ matrix.target }}" == "win-x64" ]; then
@@ -54,11 +54,11 @@ jobs:
       - name: Publish windows
         uses: actions/upload-artifact@v3
         with: 
-          name: Windows download
+          name: "windows-${release_name}}"
           path: "*.zip"
       
       - name: Publish linux
         uses: actions/upload-artifact@v3
         with: 
-          name: Linux download
+          name: "linux-${release_name}}"
           path: "*.gz"
