@@ -52,10 +52,9 @@ jobs:
           # Delete output directory
           rm -r "./artifacts"
 
-      - name: Publish
-        uses: actions/upload-artifact@v3
-        with: 
-          name: "${release_name}"
-          path:  |
-            "*.zip"
-            "*.tar.gz"
+      - name: Release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: |
+            "2facliclient*.zip"
+            "2facliclient*.tar.gz"
