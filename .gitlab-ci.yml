@@ -1,0 +1,50 @@
+image : mcr.microsoft.com/dotnet/sdk:7.0
+
+variables:
+#  PROJECTNAME: $CI_PROJECT_TITLE
+  PROJECTNAME: 2FA
+
+stages:
+  - build
+  - test
+  - package
+#  - deploy
+
+build:
+  stage: build
+  script:
+    - dotnet build $PROJECTNAME -c Release
+  only:
+    - master
+
+test:
+  stage: test
+  script:
+    - dotnet test $PROJECTNAME -c Release
+  only:
+    - master
+
+package:
+  stage: package
+  script:
+    - dotnet publish $PROJECTNAME -c Release -o artifacts/linux_x64 -r linux-x64 /p:Version=$CI_COMMIT_TAG --self-contained false
+    - dotnet publish $PROJECTNAME -c Release -o artifacts/win_x64 -r win-x64 /p:Version=$CI_COMMIT_TAG --self-contained false
+    - echo "$CI_COMMIT_TAG-$CI_COMMIT_SHA" >> artifacts/version
+  artifacts:
+    name: $PROJECTNAME-$CI_COMMIT_TAG
+    paths:
+      - artifacts
+    expire_in: 2 days
+  only:
+    - tags
+    
+#deploy:
+#  stage: deploy
+#  script:
+#    - cat artifacts/version
+#    - echo "Deploy to staging"
+#  environment:
+#    name: production
+#  when: manual
+#  only:
+#    - tags
