@@ -55,10 +55,10 @@ jobs:
         uses: actions/upload-artifact@v3
         with: 
           name: Windows download
-          path: *.zip
+          path: "*.zip"
       
       - name: Publish linux
         uses: actions/upload-artifact@v3
         with: 
           name: Linux download
-          path: *.gz
+          path: "*.gz"
