@@ -39,7 +39,7 @@ jobs:
         run: dotnet restore
 
       - name: Build
-        run: dotnet build --configuration Release --no-restore
+        run: dotnet build --runtime "${{ matrix.target }}" --configuration Release --no-restore --self-contained false
 
       - name: Test
         run: dotnet test --no-restore --verbosity normal
