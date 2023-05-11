@@ -136,7 +136,7 @@
     <value>Incompatible vault version {0}, expected version {1}</value>
   </data>
   <data name="EX_MFA_BACKUP_DOWNLOAD_FAILED" xml:space="preserve">
-    <value>Failed to download MFA backup (0)</value>
+    <value>Failed to download MFA backup ({0})</value>
   </data>
   <data name="EX_UNHANDLED" xml:space="preserve">
     <value>Unhandled exception: {0}</value>

@@ -115,7 +115,7 @@ namespace TwoFA.ResourceFiles {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Failed to download MFA backup (0).
+        ///   Looks up a localized string similar to Failed to download MFA backup ({0}).
         /// </summary>
         internal static string EX_MFA_BACKUP_DOWNLOAD_FAILED {
             get {
