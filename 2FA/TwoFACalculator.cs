@@ -44,7 +44,7 @@ internal partial class TwoFACalculator
             // Remove padding
             value = value.TrimEnd('=');
 
-            // Decode Base32 value (not world's most efficient or beatiful code but it gets the job done.
+            // Decode Base32 value (not world's most efficient or beautiful code but it gets the job done.
             var bits = string.Concat(value.Select(c => Convert.ToString(_base32lookup[c], 2).PadLeft(5, '0')));
             return Enumerable.Range(0, bits.Length / 8).Select(i => Convert.ToByte(bits.Substring(i * 8, 8), 2)).ToArray();
         }

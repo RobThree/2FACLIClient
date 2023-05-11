@@ -35,7 +35,7 @@ internal static class StreamExtensions
     }
 
     /// <summary>
-    /// Reads the specified number of bytes from the stream and returns those bytes as a <see cref="Span{byte}"/>.
+    /// Reads the specified number of bytes from the stream and returns those bytes as a <see cref="byte[]"/>.
     /// </summary>
     /// <param name="stream">The stream to read from.</param>
     /// <param name="len">The number of butes to read.</param>

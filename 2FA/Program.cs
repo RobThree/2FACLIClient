@@ -21,7 +21,7 @@ internal class Program
 
     private static async Task<int> Main(string[] args)
     {
-        // This wil; only be invoked before the CommandLineBuilder is invoked.
+        // This will only be invoked before the CommandLineBuilder is invoked.
         AppDomain.CurrentDomain.UnhandledException += (s, e) =>
         {
             WriteConsoleError(string.Format(Translations.EX_UNHANDLED, (e.ExceptionObject as Exception)?.Message));

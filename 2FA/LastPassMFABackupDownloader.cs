@@ -22,7 +22,6 @@ public class LastPassMFABackupDownloader
     {
         var client = RestService.For<ILastPassClient>(_hosturl);
 
-        //var iterations = await GetIterations(client, username).ConfigureAwait(false);
         var iterations = await ExecuteStep(
             Translations.STATUS_RETRIEVING_ITERATIONS,
             () => client.GetIterations(username, cancellationToken),
