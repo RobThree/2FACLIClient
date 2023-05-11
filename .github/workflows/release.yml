@@ -52,14 +52,10 @@ jobs:
           # Delete output directory
           rm -r "./artifacts"
 
-      - name: Publish windows
+      - name: Publish
         uses: actions/upload-artifact@v3
         with: 
-          name: "windows-${release_name}}"
-          path: "*.zip"
-      
-      - name: Publish linux
-        uses: actions/upload-artifact@v3
-        with: 
-          name: "linux-${release_name}}"
-          path: "*.gz"
+          name: "${release_name}"
+          path:  |
+            "*.zip"
+            "*.tar.gz"
