@@ -88,7 +88,7 @@ internal class Program
     private static void List(FileInfo vaultFile, string? find)
     {
         var dp = new AesDataProtector(Options.Create(_vaultoptions));
-        var password = ReadPassword("Password");
+        var password = ReadPassword("Vault password");
         var json = dp.LoadEncrypted(vaultFile.FullName, password);
         var accounts = JsonSerializer.Deserialize<TwoFASecretsFile>(json)!.Accounts.ToArray();
 
