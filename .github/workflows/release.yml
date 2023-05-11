@@ -38,7 +38,7 @@ jobs:
           release_name="app-$tag-${{ matrix.target }}"
 
           # Build everything
-          dotnet publish --runtime "${{ matrix.target }}" -c Release -o "${release_name}" --self-contained false
+          dotnet publish 2FA --runtime "${{ matrix.target }}" -c Release -o "${release_name}" --self-contained false
 
           # Pack files
           if [ "${{ matrix.target }}" == "win-x64" ]; then
