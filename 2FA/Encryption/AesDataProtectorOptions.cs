@@ -1,4 +1,5 @@
 ﻿using System.Security.Cryptography;
+using TwoFA.ResourceFiles;
 
 namespace TwoFA.Encryption;
 
@@ -18,6 +19,6 @@ internal record AesDataProtectorOptions
             "SHA256" => HashAlgorithmName.SHA256,
             "SHA384" => HashAlgorithmName.SHA384,
             "SHA512" => HashAlgorithmName.SHA512,
-            _ => throw new NotSupportedException($"Hashalgorithm {HashAlgorithm} not supported")
+            _ => throw new NotSupportedException(string.Format(Translations.EX_HASHALGORITHM_NOT_SUPPORTED, HashAlgorithm))
         };
 };

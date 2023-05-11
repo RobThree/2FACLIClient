@@ -8,6 +8,7 @@ using System.Text;
 using System.Text.Json;
 using TwoFA.Encryption;
 using TwoFA.Models;
+using TwoFA.ResourceFiles;
 
 namespace TwoFA;
 
@@ -35,23 +36,23 @@ internal class Program
             fileOption.SetDefaultValue(new FileInfo(_mainoptions.VaultFile));
         }
 
-        var findOption = new Option<string?>("--find", "Search string");
+        var findOption = new Option<string?>("--find", Translations.OPT_FIND);
         findOption.AddAlias("-f");
 
-        var usernameOption = new Option<string>("--username", "Username (emailaddress)") { IsRequired = true };
+        var usernameOption = new Option<string>("--username", Translations.OPT_USERNAME) { IsRequired = true };
         usernameOption.AddAlias("-u");
 
-        var otpOption = new Option<string>("--otp", "Current OTP code");
+        var otpOption = new Option<string>("--otp", Translations.OPT_OTP);
         otpOption.AddAlias("-o");
 
-        var rootCommand = new RootCommand("LastPass 2FA CLI authenticator");
+        var rootCommand = new RootCommand(Translations.CMD_ROOT);
 
-        var refreshcommand = new Command("refresh", "Get or refresh TOTP password vault") { fileOption, usernameOption, otpOption };
+        var refreshcommand = new Command("refresh", Translations.CMD_REFRESH) { fileOption, usernameOption, otpOption };
         refreshcommand.AddAlias("update");
         refreshcommand.AddAlias("download");
         refreshcommand.SetHandler(Refresh, fileOption, usernameOption, otpOption);
 
-        var listcommand = new Command("list", "Lists accounts and matching TOTP codes") { fileOption, findOption };
+        var listcommand = new Command("list", Translations.CMD_LIST) { fileOption, findOption };
         listcommand.SetHandler(List, fileOption, findOption);
 
         rootCommand.AddCommand(refreshcommand);
@@ -66,29 +67,29 @@ internal class Program
 
     private static async Task Refresh(FileInfo vaultFile, string username, string? otp)
     {
-        var lppassword = ReadPassword("LastPass master password");
+        var lppassword = ReadPassword(Translations.PROMPT_LASTPASS_PWD);
         var dp = new AesDataProtector(Options.Create(_vaultoptions));
         var lpclient = new LastPassMFABackupDownloader();
         var mfadata = await lpclient.DownloadAsync(username, lppassword, otp).ConfigureAwait(false);
-        Console.WriteLine("MFA Backup successfully retrieved");
-        var password = ReadPassword("Local vault password");
+        Console.WriteLine(Translations.STATUS_MFA_BACKUP_DOWNLOADED);
+        var password = ReadPassword(Translations.PROMPT_LOCALVAULT_PWD);
 
         if (password == lppassword)
         {
-            WriteConsoleWarning("Warning: it is NOT recommended to have your local vault password the same as your LastPass master password!");
+            WriteConsoleWarning(Translations.WARN_LPMASTERPASSWD_SAME);
         }
 
-        if (password == lppassword || ReadPassword("Confirm local vault password") == password)
+        if (password == lppassword || ReadPassword(Translations.PROMPT_CONFIRM_LOCALVAULT_PWD) == password)
         {
             dp.SaveEncrypted(vaultFile.FullName, mfadata, password);
         }
-        Console.WriteLine("Local vault updated / refreshed");
+        Console.WriteLine(Translations.STATUS_LOCALVAULT_UPDATED);
     }
 
     private static void List(FileInfo vaultFile, string? find)
     {
         var dp = new AesDataProtector(Options.Create(_vaultoptions));
-        var password = ReadPassword("Vault password");
+        var password = ReadPassword(Translations.PROMPT_LOCALVAULT_PWD);
         var json = dp.LoadEncrypted(vaultFile.FullName, password);
         var accounts = JsonSerializer.Deserialize<TwoFASecretsFile>(json)!.Accounts.ToArray();
 
@@ -99,7 +100,7 @@ internal class Program
             .ToArray();
         var maxlen = matchingaccounts.Max(a => (a.IssuerName ?? string.Empty).Length);
 
-        Console.WriteLine($"{accounts.Length} accounts in store");
+        Console.WriteLine(string.Format(Translations.STATUS_ACCOUNTS_IN_VAULT, accounts.Length));
         foreach (var account in matchingaccounts)
         {
             var options = new TwoFAOptions { Digits = account.Digits, Period = account.TimeStep, Algorithm = Enum.Parse<Algorithm>(account.Algorithm) };
@@ -108,7 +109,7 @@ internal class Program
                 $"{account.IssuerName.PadRight(maxlen)} : {calc.GetCode(account.Secret),-10} ({account.UserName}, {account.OriginalIssuerName})"
             );
         }
-        Console.WriteLine($"{matchingaccounts.Length} accounts matched");
+        Console.WriteLine(string.Format(Translations.STATUS_ACCOUNTS_MATCHED, matchingaccounts.Length));
     }
 
     private static void WriteConsoleError(string error) => WriteConsoleColor(error, ConsoleColor.Red);

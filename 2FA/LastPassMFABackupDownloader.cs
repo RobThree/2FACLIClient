@@ -3,8 +3,15 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json.Serialization;
 using System.Xml.Serialization;
+using TwoFA.ResourceFiles;
 
 namespace TwoFA;
+
+public class LastPassMFABackupDownloadFailedException : Exception
+{
+    public LastPassMFABackupDownloadFailedException(string message, Exception? innerException)
+        : base(message, innerException) { }
+}
 
 public class LastPassMFABackupDownloader
 {
@@ -34,7 +41,7 @@ public class LastPassMFABackupDownloader
         }
         catch (Exception ex)
         {
-            throw new Exception($"Failed to download MFA Vault ({ex.Message})");
+            throw new LastPassMFABackupDownloadFailedException(string.Format(Translations.EX_MFA_BACKUP_DOWNLOAD_FAILED, ex.Message), ex);
         }
     }
 

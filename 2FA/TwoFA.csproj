@@ -27,6 +27,21 @@
 	</ItemGroup>
 
 	<ItemGroup>
+	  <Compile Update="ResourceFiles\Translations.Designer.cs">
+	    <DesignTime>True</DesignTime>
+	    <AutoGen>True</AutoGen>
+	    <DependentUpon>Translations.resx</DependentUpon>
+	  </Compile>
+	</ItemGroup>
+
+	<ItemGroup>
+	  <EmbeddedResource Update="ResourceFiles\Translations.resx">
+	    <Generator>ResXFileCodeGenerator</Generator>
+	    <LastGenOutput>Translations.Designer.cs</LastGenOutput>
+	  </EmbeddedResource>
+	</ItemGroup>
+
+	<ItemGroup>
 		<None Update="appsettings.json" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
 	</ItemGroup>
 </Project>

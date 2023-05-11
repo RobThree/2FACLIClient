@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Options;
 using System.Security.Cryptography;
+using TwoFA.ResourceFiles;
 
 namespace TwoFA;
 
@@ -15,7 +16,8 @@ internal partial class TwoFACalculator
 
     public string GetCode(string secret, DateTimeOffset dateTime)
     {
-        using var algo = (KeyedHashAlgorithm)(CryptoConfig.CreateFromName("HMAC" + (Enum.GetName(_options.Algorithm) ?? throw new InvalidOperationException())) ?? throw new InvalidOperationException());
+        var algoname = "HMAC" + (Enum.GetName(_options.Algorithm) ?? throw new NotSupportedException(string.Format(Translations.EX_HASHALGORITHM_NOT_SUPPORTED, _options.Algorithm)));
+        using var algo = (KeyedHashAlgorithm)(CryptoConfig.CreateFromName(algoname) ?? throw new InvalidOperationException(string.Format(Translations.EX_FAILED_TO_INITIALIZE_HASHALGO, algoname)));
         algo.Key = Base32.Decode(secret);
         var ts = BitConverter.GetBytes(GetTimeSlice(dateTime.ToUnixTimeSeconds(), 0, (int)_options.Period.TotalSeconds));
         var hashhmac = algo.ComputeHash(new byte[] { 0, 0, 0, 0, ts[3], ts[2], ts[1], ts[0] });

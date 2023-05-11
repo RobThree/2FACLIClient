@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Options;
 using System.Security.Cryptography;
 using System.Text;
+using TwoFA.ResourceFiles;
 
 namespace TwoFA.Encryption;
 
@@ -40,14 +41,14 @@ internal class AesDataProtector : IDataProtector
         var header = fs.ReadBytes(_magicheader.Length);
         if (!_magicheader.SequenceEqual(header.ToArray()))
         {
-            throw new InvalidOperationException("Vault file does not appear to be valid");
+            throw new InvalidOperationException(Translations.EX_VAULT_FILE_INVALID);
         }
         // Check version
         var version = header[_magicheader.Length - 1];
         var expectedversion = 1;
         if (version != expectedversion)
         {
-            throw new InvalidOperationException($"Incompatible vault version {version}, expected {expectedversion}");
+            throw new NotSupportedException(string.Format(Translations.EX_INCOMPATIBLE_VAULT_VERSION, version, expectedversion));
         }
 
         var iv = fs.ReadLengthEncodedBytes().ToArray();         // Read IV
@@ -63,7 +64,7 @@ internal class AesDataProtector : IDataProtector
         }
         catch (Exception ex)
         {
-            throw new Exception("Failed to decrypt file", ex);
+            throw new CryptographicException(Translations.EX_VAULT_DECRYPTION_FAILED, ex);
         }
     }
 
