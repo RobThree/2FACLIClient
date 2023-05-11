@@ -3,7 +3,7 @@ using System.Text.Json.Serialization;
 
 namespace TwoFA.Converters;
 
-internal class GUIDConverter : JsonConverter<Guid>
+internal class GUIDJsonConverter : JsonConverter<Guid>
 {
     public override Guid Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
         => Guid.TryParse(reader.GetString(), out var result) ? result : Guid.Empty;

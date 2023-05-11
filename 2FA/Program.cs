@@ -4,6 +4,7 @@ using System.Collections.Concurrent;
 using System.CommandLine;
 using System.CommandLine.Builder;
 using System.CommandLine.Parsing;
+using System.Globalization;
 using System.Text;
 using System.Text.Json;
 using TwoFA.Encryption;
@@ -20,6 +21,14 @@ internal class Program
 
     private static int Main(string[] args)
     {
+        // This wil; only be invoked before the CommandLineBuilder is invoked.
+        AppDomain.CurrentDomain.UnhandledException += (s, e) =>
+        {
+            WriteConsoleError(string.Format(Translations.EX_UNHANDLED, (e.ExceptionObject as Exception)?.Message));
+            Environment.Exit(-2);
+        };
+
+        // Read and apply config
         var configprovider = new ConfigurationBuilder()
             .SetBasePath(AppContext.BaseDirectory)
             .AddJsonFile("appsettings.json", true)
@@ -29,6 +38,12 @@ internal class Program
         configprovider.Bind("Main", _mainoptions);
         configprovider.Bind("Vault", _vaultoptions);
 
+        // Set app culture
+        var culture = CultureInfo.GetCultureInfo(_mainoptions.Locale);
+        Thread.CurrentThread.CurrentCulture = culture;
+        Thread.CurrentThread.CurrentUICulture = culture;
+
+        // Define commandline options
         var fileOption = new Option<FileInfo>("--file", "The TOTP file");
         fileOption.AddAlias("-i");
         if (!string.IsNullOrEmpty(_mainoptions.VaultFile))
@@ -58,6 +73,7 @@ internal class Program
         rootCommand.AddCommand(refreshcommand);
         rootCommand.AddCommand(listcommand);
 
+        // Kick off application
         return new CommandLineBuilder(rootCommand)
             .UseDefaults()
             .UseExceptionHandler((e, context) => WriteConsoleError(e.Message), -1)

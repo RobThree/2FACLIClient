@@ -10,7 +10,7 @@ internal record TwoFAAccount
     [JsonPropertyName("originalUserName")]
     public required string OriginalUserName { get; set; }
     [JsonPropertyName("accountID")]
-    [JsonConverter(typeof(GUIDConverter))]
+    [JsonConverter(typeof(GUIDJsonConverter))]
     public Guid AccountID { get; set; }
     [JsonPropertyName("secret")]
     public required string Secret { get; init; }
@@ -23,9 +23,9 @@ internal record TwoFAAccount
     [JsonPropertyName("userName")]
     public required string UserName { get; set; }
     [JsonPropertyName("timeStep")]
-    [JsonConverter(typeof(TimeSpanConverter))]
+    [JsonConverter(typeof(TimeSpanJsonConverter))]
     public required TimeSpan TimeStep { get; init; } = TimeSpan.FromSeconds(30);
     [JsonPropertyName("creationTimestamp")]
-    [JsonConverter(typeof(DateTimeOffsetConverter))]
+    [JsonConverter(typeof(DateTimeOffsetJsonConverter))]
     public required DateTimeOffset CreationDate { get; init; }
 }

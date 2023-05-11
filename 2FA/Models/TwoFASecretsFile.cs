@@ -6,7 +6,7 @@ namespace TwoFA.Models;
 internal record TwoFASecretsFile
 {
     [JsonPropertyName("localDeviceId")]
-    [JsonConverter(typeof(GUIDConverter))]
+    [JsonConverter(typeof(GUIDJsonConverter))]
     public required Guid LocalDeviceId { get; init; }
     [JsonPropertyName("deviceSecret")]
     public required string DeviceSecret { get; init; }
@@ -17,6 +17,6 @@ internal record TwoFASecretsFile
     [JsonPropertyName("version")]
     public required int Version { get; init; }
     [JsonPropertyName("deviceId")]
-    [JsonConverter(typeof(GUIDConverter))]
+    [JsonConverter(typeof(GUIDJsonConverter))]
     public required Guid DeviceId { get; init; }
 }

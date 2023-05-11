@@ -124,6 +124,15 @@ namespace TwoFA.ResourceFiles {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Unhandled exception: {0}.
+        /// </summary>
+        internal static string EX_UNHANDLED {
+            get {
+                return ResourceManager.GetString("EX_UNHANDLED", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Failed to decrypt vault.
         /// </summary>
         internal static string EX_VAULT_DECRYPTION_FAILED {
@@ -165,6 +174,15 @@ namespace TwoFA.ResourceFiles {
         internal static string OPT_USERNAME {
             get {
                 return ResourceManager.GetString("OPT_USERNAME", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to TOTP vault file.
+        /// </summary>
+        internal static string OPT_VAULT_FILE {
+            get {
+                return ResourceManager.GetString("OPT_VAULT_FILE", resourceCulture);
             }
         }
         

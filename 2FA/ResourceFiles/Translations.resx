@@ -138,6 +138,9 @@
   <data name="EX_MFA_BACKUP_DOWNLOAD_FAILED" xml:space="preserve">
     <value>Failed to download MFA backup (0)</value>
   </data>
+  <data name="EX_UNHANDLED" xml:space="preserve">
+    <value>Unhandled exception: {0}</value>
+  </data>
   <data name="EX_VAULT_DECRYPTION_FAILED" xml:space="preserve">
     <value>Failed to decrypt vault</value>
   </data>
@@ -152,6 +155,9 @@
   </data>
   <data name="OPT_USERNAME" xml:space="preserve">
     <value>Username (emailaddress)</value>
+  </data>
+  <data name="OPT_VAULT_FILE" xml:space="preserve">
+    <value>TOTP vault file</value>
   </data>
   <data name="PROMPT_CONFIRM_LOCALVAULT_PWD" xml:space="preserve">
     <value>Confirm local vault password</value>
