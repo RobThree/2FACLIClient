@@ -11,7 +11,7 @@ jobs:
     name: ci-${{matrix.os}}
     strategy:
       matrix:
-        kind: ['linux', 'windows']
+        kind: ['linux', 'windows', 'macos']
         include:
           - kind: linux
             os: ubuntu-latest
@@ -19,6 +19,12 @@ jobs:
           - kind: windows
             os: windows-latest
             target: win-x64
+          - kind: macos
+            os: macos-latest
+            target: osx-x64
+          - kind: macos
+            os: macos-latest
+            target: osx-arm64
     runs-on: ${{ matrix.os }}
     steps:
       - name: Checkout
