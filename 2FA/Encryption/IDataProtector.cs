@@ -2,6 +2,6 @@
 
 internal interface IDataProtector
 {
-    void SaveEncrypted(string path, string data, string password);
-    string LoadEncrypted(string path, string password);
+    Task SaveEncryptedAsync(string path, string data, string password, CancellationToken cancellationToken = default);
+    Task<string> LoadEncryptedAsync(string path, string password, CancellationToken cancellationToken = default);
 }

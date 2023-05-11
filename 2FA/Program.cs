@@ -19,7 +19,7 @@ internal class Program
     private static readonly AesDataProtectorOptions _vaultoptions = new();
     private static readonly MainOptions _mainoptions = new();
 
-    private static int Main(string[] args)
+    private static async Task<int> Main(string[] args)
     {
         // This wil; only be invoked before the CommandLineBuilder is invoked.
         AppDomain.CurrentDomain.UnhandledException += (s, e) =>
@@ -65,49 +65,60 @@ internal class Program
         var refreshcommand = new Command("refresh", Translations.CMD_REFRESH) { fileOption, usernameOption, otpOption };
         refreshcommand.AddAlias("update");
         refreshcommand.AddAlias("download");
-        refreshcommand.SetHandler(Refresh, fileOption, usernameOption, otpOption);
+        refreshcommand.SetHandler(async (ctx) => await Refresh(
+            ctx.ParseResult.GetValueForOption(fileOption)!,
+            ctx.ParseResult.GetValueForOption(usernameOption)!,
+            ctx.ParseResult.GetValueForOption(otpOption)!,
+            ctx.GetCancellationToken()
+        ).ConfigureAwait(false));
 
         var listcommand = new Command("list", Translations.CMD_LIST) { fileOption, findOption };
-        listcommand.SetHandler(List, fileOption, findOption);
+        listcommand.SetHandler(async (ctx) => await List(
+            ctx.ParseResult.GetValueForOption(fileOption)!,
+            ctx.ParseResult.GetValueForOption(findOption),
+            ctx.GetCancellationToken()
+        ).ConfigureAwait(false));
 
         rootCommand.AddCommand(refreshcommand);
         rootCommand.AddCommand(listcommand);
 
         // Kick off application
-        return new CommandLineBuilder(rootCommand)
+        return await new CommandLineBuilder(rootCommand)
             .UseDefaults()
             .UseExceptionHandler((e, context) => WriteConsoleError(e.Message), -1)
+            .CancelOnProcessTermination()
             .Build()
-            .Invoke(args);
+            .InvokeAsync(args)
+            .ConfigureAwait(false);
     }
 
-    private static async Task Refresh(FileInfo vaultFile, string username, string? otp)
+    private static async Task Refresh(FileInfo vaultFile, string username, string? otp, CancellationToken cancellationToken = default)
     {
-        var lppassword = ReadPassword(Translations.PROMPT_LASTPASS_PWD);
+        var lppassword = ReadPassword(Translations.PROMPT_LASTPASS_PWD, cancellationToken);
         var dp = new AesDataProtector(Options.Create(_vaultoptions));
         var lpclient = new LastPassMFABackupDownloader();
-        var mfadata = await lpclient.DownloadAsync(username, lppassword, otp).ConfigureAwait(false);
+        var mfadata = await lpclient.DownloadAsync(username, lppassword, otp, cancellationToken).ConfigureAwait(false);
         Console.WriteLine(Translations.STATUS_MFA_BACKUP_DOWNLOADED);
 
-        var password = ReadPassword(Translations.PROMPT_LOCALVAULT_PWD);
+        var password = ReadPassword(Translations.PROMPT_LOCALVAULT_PWD, cancellationToken);
 
         if (password == lppassword)
         {
             WriteConsoleWarning(Translations.WARN_LPMASTERPASSWD_SAME);
         }
 
-        if (password == lppassword || ReadPassword(Translations.PROMPT_CONFIRM_LOCALVAULT_PWD) == password)
+        if (password == lppassword || ReadPassword(Translations.PROMPT_CONFIRM_LOCALVAULT_PWD, cancellationToken) == password)
         {
-            dp.SaveEncrypted(vaultFile.FullName, mfadata, password);
+            await dp.SaveEncryptedAsync(vaultFile.FullName, mfadata, password, cancellationToken).ConfigureAwait(false);
         }
         Console.WriteLine(Translations.STATUS_LOCALVAULT_UPDATED);
     }
 
-    private static void List(FileInfo vaultFile, string? find)
+    private static async Task List(FileInfo vaultFile, string? find, CancellationToken cancellationToken = default)
     {
         var dp = new AesDataProtector(Options.Create(_vaultoptions));
-        var password = ReadPassword(Translations.PROMPT_LOCALVAULT_PWD);
-        var json = dp.LoadEncrypted(vaultFile.FullName, password);
+        var password = ReadPassword(Translations.PROMPT_LOCALVAULT_PWD, cancellationToken);
+        var json = await dp.LoadEncryptedAsync(vaultFile.FullName, password, cancellationToken).ConfigureAwait(false);
         var accounts = JsonSerializer.Deserialize<TwoFASecretsFile>(json)!.Accounts.ToArray();
 
         var matchingaccounts = accounts.Where(account => IsMatch(account, find))
@@ -147,7 +158,7 @@ internal class Program
             || account.OriginalUserName.Contains(find, stringComparison)
             || account.OriginalIssuerName.Contains(find, stringComparison);
 
-    private static string ReadPassword(string prompt)
+    private static string ReadPassword(string prompt, CancellationToken cancellationToken = default)
     {
         var password = new StringBuilder();
         var done = false;
@@ -169,7 +180,7 @@ internal class Program
                     password.Append(key);
                     break;
             }
-        } while (!done);
+        } while (!done && !cancellationToken.IsCancellationRequested);
 
         return password.ToString();
     }
