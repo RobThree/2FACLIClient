@@ -11,7 +11,7 @@ jobs:
     name: ci-${{matrix.os}}
     strategy:
       matrix:
-        kind: ['linux', 'windows']
+        kind: ['linux', 'windows', 'macos-x64', 'macos-arm64']
         include:
           - kind: linux
             os: ubuntu-latest
@@ -19,6 +19,12 @@ jobs:
           - kind: windows
             os: windows-latest
             target: win-x64
+          - kind: macos-x64
+            os: macos-latest
+            target: macos-x64
+          - kind: maxos-arm64
+            os: macos-latest
+            target: macos-arm64
     runs-on: ${{ matrix.os }}
     steps:
       - name: Checkout
@@ -28,12 +34,9 @@ jobs:
         uses: actions/setup-dotnet@v3
         with:
           dotnet-version: ${{ env.DOTNET_VERSION }}
-      
-      - name: Install dependencies
-        run: dotnet restore
 
       - name: Build
-        run: dotnet build 2FA --runtime ${{ matrix.target }} --configuration Release --no-restore --self-contained false
+        run: dotnet build 2FA --runtime ${{ matrix.target }} --configuration Release --self-contained false
 
       - name: Test
         run: dotnet test --no-restore --verbosity normal

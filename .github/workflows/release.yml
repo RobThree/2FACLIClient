@@ -10,7 +10,7 @@ jobs:
     name: Release
     strategy:
       matrix:
-        kind: ['linux', 'windows']
+        kind: ['linux', 'windows', 'macos-x64', 'macos-arm64']
         include:
           - kind: linux
             os: ubuntu-latest
@@ -18,6 +18,12 @@ jobs:
           - kind: windows
             os: windows-latest
             target: win-x64
+          - kind: macos-x64
+            os: macos-latest
+            target: macos-x64
+          - kind: maxos-arm64
+            os: macos-latest
+            target: macos-arm64
     runs-on: ${{ matrix.os }}
     steps:
       - name: Checkout
@@ -28,9 +34,6 @@ jobs:
         with:
           dotnet-version: ${{ env.DOTNET_VERSION }}
 
-      - name: Install dependencies
-        run: dotnet restore
-      
       - name: Build
         shell: bash
         run: |
@@ -38,7 +41,7 @@ jobs:
           release_name="2facliclient-$tag-${{ matrix.target }}"
 
           # Build everything
-          dotnet publish 2FA --runtime "${{ matrix.target }}" -c Release --property:PublishDir="../artifacts" --self-contained false
+          dotnet publish 2FA --runtime ${{ matrix.target }} --configuration Release --property:PublishDir="../artifacts" --self-contained false
 
           # Pack files
           if [[ "${{ matrix.target }}" == win-* ]]; then
