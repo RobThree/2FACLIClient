@@ -3,6 +3,7 @@ name: Publish
 on:
   release:
     types: [published]
+    branches: [master]
 env:
   DOTNET_VERSION: '7.0.x'
 jobs:
