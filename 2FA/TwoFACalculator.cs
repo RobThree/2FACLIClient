@@ -41,8 +41,9 @@ internal partial class TwoFACalculator
         {
             ArgumentNullException.ThrowIfNull(value);
 
-            // Remove padding
-            value = value.TrimEnd('=');
+            // Remove padding and uppercase the string (apparently there are cases where a lowercase string is stored
+            // somehow? See https://github.com/RobThree/2FACLIClient/issues/2)
+            value = value.TrimEnd('=').ToUpperInvariant();
 
             // Decode Base32 value (not world's most efficient or beautiful code but it gets the job done.
             var bits = string.Concat(value.Select(c => Convert.ToString(_base32lookup[c], 2).PadLeft(5, '0')));
