@@ -6,11 +6,11 @@ This commandline tool can be used on Windows, MacOS and Linux systems to get a 2
 
 ## Quickstart
 
-1. Put the executable (`2fa.exe` for windows, `2fa` for MacOs / Linux) and dependencies somewhere in your path.
+1. Put the executable (`2fa.exe` for windows, `2fa` for MacOs / Linux) and dependencies somewhere in your path (e.g. `C:\Program Files\2FACLIClient\` or `/usr/local/bin/share/2FACLIClient`). Make sure your path includes this directory or you add a symlink to the executable (e.g. `ln -s /usr/local/bin/share/2FACLIClient/2fa /usr/local/bin/2fa`)
 
-   Either edit the `appsettings.json` file to point to a location where you want to store your MFA vault, or use the `-i` (or `--file`) option when invoking the command to specify where the vault is (to be) stored.
+2. Either edit the `appsettings.json` file to point to a location where you want to store your MFA vault, or use the `-i` (or `--file`) option when invoking commands to specify where the vault is (to be) stored.
 
-2. Download the vault
+3. Download the vault
 
    `2fa download -u username@domain.com -o 123456`
    
@@ -18,7 +18,7 @@ This commandline tool can be used on Windows, MacOS and Linux systems to get a 2
    
    You will be asked for your LastPass master password (to be able to download the vault) and a password to use when encrypting your offline copy of the MFA vault so your data is secure. Confirm the vault password and wait for the vault to be downloaded.
 
-3. From now on you can lookup 2fa codes:
+4. From now on you can lookup 2fa codes:
 
     `2fa list`
 
