@@ -134,7 +134,7 @@ internal class Program
             var options = new TwoFAOptions { Digits = account.Digits, Period = account.TimeStep, Algorithm = Enum.Parse<Algorithm>(account.Algorithm) };
             var calc = _calculators.GetOrAdd(options, o => new TwoFACalculator(Options.Create(o)));
             Console.WriteLine(
-                $"{account.IssuerName.PadRight(maxlen)} : {calc.GetCode(account.Secret),-10} ({string.Join(", ", new[] { account.UserName, account.OriginalIssuerName }.Where(s => s.Length > 0))})"
+                $"{account.IssuerName.PadRight(maxlen)} : {calc.GetCode(account.Secret),-10} ({string.Join(", ", new[] { account.UserName, account.OriginalIssuerName }.Where(s => s.Length > 0).Distinct())})"
             );
         }
         Console.WriteLine(string.Format(Translations.STATUS_ACCOUNTS_MATCHED, matchingaccounts.Length));
