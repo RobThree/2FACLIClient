@@ -41,6 +41,7 @@ jobs:
           release_name="2facliclient-$tag-${{ matrix.target }}"
 
           # Build everything
+          dotnet restore
           dotnet publish 2FA --runtime ${{ matrix.target }} --configuration Release --property:PublishDir="../artifacts" --self-contained false
 
           # Pack files

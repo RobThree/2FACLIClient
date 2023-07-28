@@ -36,7 +36,9 @@ jobs:
           dotnet-version: ${{ env.DOTNET_VERSION }}
 
       - name: Build
-        run: dotnet build 2FA --runtime ${{ matrix.target }} --configuration Release --self-contained false
+        run: |
+            dotnet restore
+            dotnet build 2FA --runtime ${{ matrix.target }} --configuration Release --self-contained false
 
       - name: Test
         run: dotnet test --no-restore --verbosity normal
