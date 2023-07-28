@@ -15,7 +15,7 @@ namespace TwoFA;
 
 internal class Program
 {
-    private static readonly ConcurrentDictionary<TwoFAOptions, TwoFACalculator> _calculators = new();
+    private static readonly ConcurrentDictionary<TwoFACalculatorOptions, TwoFACalculator> _calculators = new();
     private static readonly AesDataProtectorOptions _vaultoptions = new();
     private static readonly MainOptions _mainoptions = new();
 
@@ -131,7 +131,7 @@ internal class Program
         Console.WriteLine(string.Format(Translations.STATUS_ACCOUNTS_IN_VAULT, accounts.Length));
         foreach (var account in matchingaccounts)
         {
-            var options = new TwoFAOptions { Digits = account.Digits, Period = account.TimeStep, Algorithm = Enum.Parse<Algorithm>(account.Algorithm) };
+            var options = new TwoFACalculatorOptions { Digits = account.Digits, Period = account.TimeStep, Algorithm = account.Algorithm };
             var calc = _calculators.GetOrAdd(options, o => new TwoFACalculator(Options.Create(o)));
             Console.WriteLine(
                 $"{account.IssuerName.PadRight(maxlen)} : {calc.GetCode(account.Secret),-10} ({string.Join(", ", new[] { account.UserName, account.OriginalIssuerName }.Where(s => s.Length > 0).Distinct())})"

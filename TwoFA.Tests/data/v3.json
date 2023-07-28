@@ -1,0 +1,59 @@
+{
+  "deviceId": "4f836418-f455-4044-9d7a-755024532710",
+  "deviceSecret": "device-secret",
+  "localDeviceId": "261ce3ca-32a1-4b30-b35f-03e7eaa95a56",
+  "deviceName": "device-name",
+  "version": 3,
+  "accounts": [
+    {
+      "accountID": "62f89159-925e-4cde-b90f-e4a8126f7eca",
+      "lmiUserId": "lmi userid 1",
+      "issuerName": "issuer 1",
+      "originalIssuerName": "originalissuer 1",
+      "userName": "user@name1.com",
+      "originalUserName": "orgiginaluser@name1.com",
+      "pushNotification": true,
+      "secret": "MZXW6YTBOJRGC6Q",
+      "timeStep": 30,
+      "digits": 6,
+      "creationTimestamp": 1690535010321,
+      "isFavorite": true,
+      "algorithm": "SHA1",
+      "folderData": {
+        "folderId": 1,
+        "position": 10
+      }
+    },
+    {
+      "accountID": "34d8ab9c-4b9b-4e88-81c9-c40e56c2e0e6",
+      "lmiUserId": "lmi userid 2",
+      "issuerName": "issuer 2",
+      "originalIssuerName": "originalissuer 2",
+      "userName": "user@name2.com",
+      "originalUserName": "orgiginaluser@name2.com",
+      "pushNotification": false,
+      "secret": "NBSWY3DPORSXG5DFOJZQ",
+      "timeStep": 60,
+      "digits": 8,
+      "creationTimestamp": 1690535010,
+      "isFavorite": false,
+      "algorithm": "SHA256",
+      "folderData": {
+        "folderId": 0,
+        "position": 20
+      }
+    }
+  ],
+  "folders": [
+    {
+      "id": 1,
+      "name": "folder 1",
+      "isOpened": false
+    },
+    {
+      "id": 0,
+      "name": "folder 2",
+      "isOpened": true
+    }
+  ]
+}

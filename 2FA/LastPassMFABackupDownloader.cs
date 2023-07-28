@@ -7,7 +7,7 @@ using TwoFA.ResourceFiles;
 
 namespace TwoFA;
 
-public class LastPassMFABackupDownloader
+internal class LastPassMFABackupDownloader
 {
     public const string DEFAULTBASEADDRESS = "https://lastpass.com";
     private readonly string _hosturl;

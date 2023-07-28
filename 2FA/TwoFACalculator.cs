@@ -6,9 +6,9 @@ namespace TwoFA;
 
 internal partial class TwoFACalculator
 {
-    private readonly TwoFAOptions _options;
+    private readonly TwoFACalculatorOptions _options;
 
-    public TwoFACalculator(IOptions<TwoFAOptions> options)
+    public TwoFACalculator(IOptions<TwoFACalculatorOptions> options)
         => _options = options?.Value ?? throw new ArgumentNullException(nameof(options));
 
     public string GetCode(string secret)

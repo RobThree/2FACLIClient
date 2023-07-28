@@ -19,4 +19,6 @@ internal record TwoFASecretsFile
     [JsonPropertyName("deviceId")]
     [JsonConverter(typeof(GUIDJsonConverter))]
     public required Guid DeviceId { get; init; }
+    [JsonPropertyName("folders")]
+    public IEnumerable<TwoFAFolder> Folders { get; init; } = Enumerable.Empty<TwoFAFolder>();
 }

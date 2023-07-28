@@ -1,0 +1,33 @@
+{
+  "deviceId": "4f836418-f455-4044-9d7a-755024532710",
+  "deviceSecret": "device-secret",
+  "localDeviceId": "261ce3ca-32a1-4b30-b35f-03e7eaa95a56",
+  "deviceName": "device-name",
+  "version": 1,
+  "accounts": [
+    {
+      "accountID": "62f89159-925e-4cde-b90f-e4a8126f7eca",
+      "issuerName": "issuer 1",
+      "originalIssuerName": "originalissuer 1",
+      "userName": "user@name1.com",
+      "originalUserName": "orgiginaluser@name1.com",
+      "secret": "MZXW6YTBOJRGC6Q",
+      "timeStep": 30,
+      "digits": 6,
+      "creationTimestamp": 1690535011,
+      "algorithm": "SHA1"
+    },
+    {
+      "accountID": "34d8ab9c-4b9b-4e88-81c9-c40e56c2e0e6",
+      "issuerName": "issuer 2",
+      "originalIssuerName": "originalissuer 2",
+      "userName": "user@name2.com",
+      "originalUserName": "orgiginaluser@name2.com",
+      "secret": "NBSWY3DPORSXG5DFOJZQ",
+      "timeStep": 60,
+      "digits": 8,
+      "creationTimestamp": 1690535010,
+      "algorithm": "SHA256"
+    }
+  ]
+}
