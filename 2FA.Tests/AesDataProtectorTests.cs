@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Options;
+using System.Runtime.CompilerServices;
 using System.Security.Cryptography;
 using TwoFA.Encryption;
 
@@ -28,7 +29,7 @@ public class AesDataProtectorTests
             KeyLength = 32
         }));
 
-        var testfile = nameof(EncryptDecrypt_Defaults);
+        var testfile = GetTestFileName();
 
         // Encrypt and save value
         await target.SaveEncryptedAsync(testfile, _testvalue, _testpassword).ConfigureAwait(false);
@@ -51,7 +52,7 @@ public class AesDataProtectorTests
             KeyLength = 16
         }));
 
-        var testfile = nameof(EncryptDecrypt_NonDefaults);
+        var testfile = GetTestFileName();
 
         // Encrypt and save value
         await target.SaveEncryptedAsync(testfile, _testvalue, _testpassword).ConfigureAwait(false);
@@ -90,11 +91,14 @@ public class AesDataProtectorTests
     public async Task ThrowsOnInvalidPassword()
     {
         var target = new AesDataProtector(Options.Create(new AesDataProtectorOptions()));
-        var testfile = nameof(ThrowsOnInvalidPassword);
+        var testfile = GetTestFileName();
 
         // Encrypt and save value
         await target.SaveEncryptedAsync(testfile, _testvalue, _testpassword).ConfigureAwait(false);
         // Load and decrypt value with incorrect password
-        var result = await target.LoadEncryptedAsync(testfile, "otherpassword").ConfigureAwait(false);
+        await target.LoadEncryptedAsync(testfile, "otherpassword").ConfigureAwait(false);
     }
+
+    private static string GetTestFileName([CallerMemberName] string? name = null)
+        => Path.Combine(Path.GetTempPath(), $"{(name ?? throw new ArgumentNullException(nameof(name))).ToLowerInvariant()}.dat");
 }
