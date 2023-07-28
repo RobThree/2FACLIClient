@@ -84,4 +84,17 @@ public class AesDataProtectorTests
         var target = new AesDataProtector(Options.Create(new AesDataProtectorOptions()));
         await target.LoadEncryptedAsync("data/invalidvaultdata.dat", _testpassword).ConfigureAwait(false);
     }
+
+    [TestMethod]
+    [ExpectedException(typeof(CryptographicException))]
+    public async Task ThrowsOnInvalidPassword()
+    {
+        var target = new AesDataProtector(Options.Create(new AesDataProtectorOptions()));
+        var testfile = nameof(ThrowsOnInvalidPassword);
+
+        // Encrypt and save value
+        await target.SaveEncryptedAsync(testfile, _testvalue, _testpassword).ConfigureAwait(false);
+        // Load and decrypt value with incorrect password
+        var result = await target.LoadEncryptedAsync(testfile, "otherpassword").ConfigureAwait(false);
+    }
 }
