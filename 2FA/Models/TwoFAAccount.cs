@@ -10,29 +10,29 @@ internal record TwoFAAccount
     public Algorithm Algorithm { get; init; } = Algorithm.SHA1;
     [JsonPropertyName("originalUserName")]
     [JsonConverter(typeof(UrlEncodedStringConverter))]
-    public required string OriginalUserName { get; set; }
+    public string? OriginalUserName { get; set; }
     [JsonPropertyName("accountID")]
     [JsonConverter(typeof(GUIDJsonConverter))]
-    public Guid AccountID { get; set; }
+    public Guid AccountID { get; set; } = Guid.Empty;
     [JsonPropertyName("secret")]
     public required string Secret { get; init; }
     [JsonPropertyName("originalIssuerName")]
     [JsonConverter(typeof(UrlEncodedStringConverter))]
-    public required string OriginalIssuerName { get; set; }
+    public string? OriginalIssuerName { get; set; }
     [JsonPropertyName("digits")]
     public int Digits { get; init; } = 6;
     [JsonPropertyName("issuerName")]
     [JsonConverter(typeof(UrlEncodedStringConverter))]
-    public required string IssuerName { get; set; }
+    public string? IssuerName { get; set; }
     [JsonPropertyName("userName")]
     [JsonConverter(typeof(UrlEncodedStringConverter))]
-    public required string UserName { get; set; }
+    public string? UserName { get; set; }
     [JsonPropertyName("timeStep")]
     [JsonConverter(typeof(TimeSpanJsonConverter))]
     public TimeSpan TimeStep { get; init; } = TimeSpan.FromSeconds(30);
     [JsonPropertyName("creationTimestamp")]
     [JsonConverter(typeof(DateTimeOffsetJsonConverter))]
-    public required DateTimeOffset CreationDate { get; init; }
+    public DateTimeOffset CreationDate { get; init; } = DateTimeOffset.UnixEpoch;
     [JsonPropertyName("lmiUserId")]
     public string? LmiUserId { get; init; }
     [JsonPropertyName("pushNotification")]

@@ -7,6 +7,54 @@ namespace TwoFA.Tests;
 public class JsonParserTests
 {
     [TestMethod]
+    public void CanParseMinimal()
+    {
+        var secretsfile = JsonSerializer.Deserialize<TwoFASecretsFile>(File.ReadAllText("data/minimal.json"));
+
+        Assert.IsNotNull(secretsfile);
+
+        Assert.AreEqual(1, secretsfile.Version);
+        Assert.IsNull(secretsfile.DeviceName);
+        Assert.IsNull(secretsfile.DeviceSecret);
+        Assert.AreEqual(Guid.Empty, secretsfile.DeviceId);
+        Assert.AreEqual(Guid.Empty, secretsfile.LocalDeviceId);
+        Assert.AreEqual(0, secretsfile.Accounts.Count());
+    }
+
+    [TestMethod]
+    public void CanParseMinimalAccount()
+    {
+        var secretsfile = JsonSerializer.Deserialize<TwoFASecretsFile>(File.ReadAllText("data/minimal_with_account.json"));
+
+        Assert.IsNotNull(secretsfile);
+
+        Assert.AreEqual(1, secretsfile.Version);
+        Assert.IsNull(secretsfile.DeviceName);
+        Assert.IsNull(secretsfile.DeviceSecret);
+        Assert.AreEqual(Guid.Empty, secretsfile.DeviceId);
+        Assert.AreEqual(Guid.Empty, secretsfile.LocalDeviceId);
+        Assert.AreEqual(1, secretsfile.Accounts.Count());
+
+        var account = secretsfile.Accounts.Single();
+        Assert.AreEqual(Guid.Empty, account.AccountID);
+        Assert.IsNull(account.LmiUserId);
+        Assert.IsNull(account.IssuerName);
+        Assert.IsNull(account.OriginalIssuerName);
+        Assert.IsFalse(account.PushNotification);
+        Assert.IsNull(account.Secret);
+        Assert.AreEqual(TimeSpan.FromSeconds(30), account.TimeStep);
+        Assert.AreEqual(6, account.Digits);
+        Assert.AreEqual(DateTimeOffset.UnixEpoch, account.CreationDate);
+        Assert.IsFalse(account.IsFavorite);
+        Assert.AreEqual(Algorithm.SHA1, account.Algorithm);
+    }
+
+    [TestMethod]
+    [ExpectedException(typeof(NotSupportedException))]
+    public void ThrowsOnInvalidAlgorithm()
+        => JsonSerializer.Deserialize<TwoFASecretsFile>(File.ReadAllText("data/invalid_algo.json"));
+
+    [TestMethod]
     public void CanParseV1Data()
     {
         var secretsfile = JsonSerializer.Deserialize<TwoFASecretsFile>(File.ReadAllText("data/v1.json"));

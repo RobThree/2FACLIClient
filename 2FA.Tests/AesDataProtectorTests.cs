@@ -11,6 +11,11 @@ public class AesDataProtectorTests
     private static readonly string _testpassword = "Sup3rS3cr3t!^";
 
     [TestMethod]
+    [ExpectedException(typeof(ArgumentNullException))]
+    public void AesDataProtector_ThrowsOnNullOptions()
+        => new AesDataProtector(null!);
+
+    [TestMethod]
     public async Task EncryptDecrypt_Defaults()
     {
         var target = new AesDataProtector(Options.Create(new AesDataProtectorOptions
@@ -54,5 +59,29 @@ public class AesDataProtectorTests
         var result = await target.LoadEncryptedAsync(testfile, _testpassword).ConfigureAwait(false);
 
         Assert.AreEqual(_testvalue, result);
+    }
+
+    [TestMethod]
+    [ExpectedException(typeof(InvalidOperationException))]
+    public async Task ThrowsOnInvalidVaultHeader()
+    {
+        var target = new AesDataProtector(Options.Create(new AesDataProtectorOptions()));
+        await target.LoadEncryptedAsync("data/invalidvaultheader.dat", string.Empty).ConfigureAwait(false);
+    }
+
+    [TestMethod]
+    [ExpectedException(typeof(NotSupportedException))]
+    public async Task ThrowsOnInvalidVaultVersion()
+    {
+        var target = new AesDataProtector(Options.Create(new AesDataProtectorOptions()));
+        await target.LoadEncryptedAsync("data/invalidvaultversion.dat", string.Empty).ConfigureAwait(false);
+    }
+
+    [TestMethod]
+    [ExpectedException(typeof(CryptographicException))]
+    public async Task ThrowsOnInvalidVaultData()
+    {
+        var target = new AesDataProtector(Options.Create(new AesDataProtectorOptions()));
+        await target.LoadEncryptedAsync("data/invalidvaultdata.dat", _testpassword).ConfigureAwait(false);
     }
 }

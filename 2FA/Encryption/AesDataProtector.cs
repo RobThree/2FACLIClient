@@ -10,7 +10,8 @@ internal class AesDataProtector : IDataProtector
     private readonly AesDataProtectorOptions _options;
     private const int _saltlen = 16;
     private const int _derivedkeylength = 32;
-    private static readonly byte[] _magicheader = "totp\x01"u8.ToArray();    // Magic header ("totp" + version: 1)
+    private static readonly byte[] _magicheader = "totp"u8.ToArray();    // Magic header
+    private const byte _version = 1;
 
     public AesDataProtector(IOptions<AesDataProtectorOptions> options)
         => _options = options?.Value ?? throw new ArgumentNullException(nameof(options));
@@ -23,6 +24,7 @@ internal class AesDataProtector : IDataProtector
 
         using var fs = File.Create(path);
         await fs.WriteAsync(_magicheader, cancellationToken).ConfigureAwait(false);             // Write magic header
+        await fs.WriteByteAsync(_version, cancellationToken).ConfigureAwait(false);             // Write vault version
         await fs.WriteLengthEncodedBytesAsync(aes.IV, cancellationToken).ConfigureAwait(false); // Write IV
         await fs.WriteLengthEncodedBytesAsync(salt, cancellationToken).ConfigureAwait(false);   // Write salt
 
@@ -30,7 +32,7 @@ internal class AesDataProtector : IDataProtector
         using var encryptor = aes.CreateEncryptor(aes.Key, aes.IV);
         using var cryptoStream = new CryptoStream(fs, encryptor, CryptoStreamMode.Write);
         using var streamWriter = new StreamWriter(cryptoStream);
-        await streamWriter.WriteAsync(data).ConfigureAwait(false);
+        await streamWriter.WriteAsync(data).ConfigureAwait(false);                              // Write data
     }
 
     public async Task<string> LoadEncryptedAsync(string path, string password, CancellationToken cancellationToken = default)
@@ -38,21 +40,20 @@ internal class AesDataProtector : IDataProtector
         using var fs = File.OpenRead(path);
 
         // Check magic header
-        var header = await fs.ReadBytesAsync(_magicheader.Length, cancellationToken).ConfigureAwait(false);
+        var header = await fs.ReadBytesAsync(_magicheader.Length, cancellationToken).ConfigureAwait(false);     // Read magic header
         if (!_magicheader.SequenceEqual(header.ToArray()))
         {
             throw new InvalidOperationException(Translations.EX_VAULT_FILE_INVALID);
         }
         // Check version
-        var version = header[_magicheader.Length - 1];
-        var expectedversion = 1;
-        if (version != expectedversion)
+        var version = await fs.ReadByteAsync(cancellationToken).ConfigureAwait(false);                          // Read vault version
+        if (version != _version)
         {
-            throw new NotSupportedException(string.Format(Translations.EX_INCOMPATIBLE_VAULT_VERSION, version, expectedversion));
+            throw new NotSupportedException(string.Format(Translations.EX_INCOMPATIBLE_VAULT_VERSION, version, _version));
         }
 
-        var iv = (await fs.ReadLengthEncodedBytesAsync(cancellationToken).ConfigureAwait(false)).ToArray();    // Read IV
-        var salt = (await fs.ReadLengthEncodedBytesAsync(cancellationToken).ConfigureAwait(false)).ToArray();  // Read salt
+        var iv = (await fs.ReadLengthEncodedBytesAsync(cancellationToken).ConfigureAwait(false)).ToArray();     // Read IV
+        var salt = (await fs.ReadLengthEncodedBytesAsync(cancellationToken).ConfigureAwait(false)).ToArray();   // Read salt
 
         using var aes = CreateAES(GetPasswordDerivedBytes(password, salt), iv);
         using var decryptor = aes.CreateDecryptor(aes.Key, aes.IV);
@@ -60,7 +61,7 @@ internal class AesDataProtector : IDataProtector
         using var streamReader = new StreamReader(cryptoStream);
         try
         {
-            return await streamReader.ReadToEndAsync(cancellationToken).ConfigureAwait(false);
+            return await streamReader.ReadToEndAsync(cancellationToken).ConfigureAwait(false);                  // Read data
         }
         catch (Exception ex)
         {

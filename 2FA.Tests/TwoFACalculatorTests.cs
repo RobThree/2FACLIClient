@@ -6,6 +6,11 @@ namespace TwoFA.Tests;
 public class TwoFACalculatorTests
 {
     [TestMethod]
+    [ExpectedException(typeof(ArgumentNullException))]
+    public void TwoFACalculator_ThrowsOnNullOptions()
+        => new TwoFACalculator(null!);
+
+    [TestMethod]
     public void TwoFATestVectors_SHA1_6_30()
     {
         var c = new TwoFACalculator(Options.Create(new TwoFACalculatorOptions
@@ -59,5 +64,20 @@ public class TwoFACalculatorTests
         }
         ));
         Assert.AreEqual("819424", c.GetCode("GEZDGNBVGY3TQOJQGEZDGNBVGY3TQOJQGEZDGNBVGY3TQOJQGEZA", DateTimeOffset.FromUnixTimeSeconds(1234567890)));
+    }
+
+    [TestMethod]
+    [ExpectedException(typeof(ArgumentNullException))]
+    public void GetCode_ThrowsOnNullSecret()
+    {
+        var c = new TwoFACalculator(Options.Create(new TwoFACalculatorOptions()));
+        c.GetCode(null!);
+    }
+
+    [TestMethod]
+    public void GetCode_HandlesEmptySecret()
+    {
+        var c = new TwoFACalculator(Options.Create(new TwoFACalculatorOptions()));
+        Assert.AreEqual("328482", c.GetCode(string.Empty, DateTimeOffset.UnixEpoch));
     }
 }

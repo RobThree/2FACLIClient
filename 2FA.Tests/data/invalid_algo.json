@@ -1,0 +1,9 @@
+{
+  "version": 1,
+  "accounts": [
+    {
+      "secret": null,
+      "algorithm": "INVALID"
+    }
+  ]
+}

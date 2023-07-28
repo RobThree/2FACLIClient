@@ -134,7 +134,7 @@ internal class Program
             var options = new TwoFACalculatorOptions { Digits = account.Digits, Period = account.TimeStep, Algorithm = account.Algorithm };
             var calc = _calculators.GetOrAdd(options, o => new TwoFACalculator(Options.Create(o)));
             Console.WriteLine(
-                $"{account.IssuerName.PadRight(maxlen)} : {calc.GetCode(account.Secret),-10} ({string.Join(", ", new[] { account.UserName, account.OriginalIssuerName }.Where(s => s.Length > 0).Distinct())})"
+                $"{account.IssuerName?.PadRight(maxlen)} : {calc.GetCode(account.Secret),-10} ({string.Join(", ", new[] { account.UserName, account.OriginalIssuerName }.Where(s => !string.IsNullOrEmpty(s)).Distinct())})"
             );
         }
         Console.WriteLine(string.Format(Translations.STATUS_ACCOUNTS_MATCHED, matchingaccounts.Length));
@@ -153,10 +153,10 @@ internal class Program
 
     private static bool IsMatch(TwoFAAccount account, string? find, StringComparison stringComparison = StringComparison.OrdinalIgnoreCase)
         => find is null
-            || account.UserName.Contains(find, stringComparison)
-            || account.IssuerName.Contains(find, stringComparison)
-            || account.OriginalUserName.Contains(find, stringComparison)
-            || account.OriginalIssuerName.Contains(find, stringComparison);
+            || (account.UserName?.Contains(find, stringComparison) ?? false)
+            || (account.IssuerName?.Contains(find, stringComparison) ?? false)
+            || (account.OriginalUserName?.Contains(find, stringComparison) ?? false)
+            || (account.OriginalIssuerName?.Contains(find, stringComparison) ?? false);
 
     private static string ReadPassword(string prompt, CancellationToken cancellationToken = default)
     {

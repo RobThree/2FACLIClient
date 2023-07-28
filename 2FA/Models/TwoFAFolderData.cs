@@ -7,5 +7,5 @@ internal record TwoFAFolderData
     [JsonPropertyName("folderId")]
     public required int FolderId { get; init; }
     [JsonPropertyName("position")]
-    public required int Position { get; init; }
+    public int Position { get; init; } = 0;
 }

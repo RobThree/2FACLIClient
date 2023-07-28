@@ -7,18 +7,18 @@ internal record TwoFASecretsFile
 {
     [JsonPropertyName("localDeviceId")]
     [JsonConverter(typeof(GUIDJsonConverter))]
-    public required Guid LocalDeviceId { get; init; }
+    public Guid LocalDeviceId { get; init; } = Guid.Empty;
     [JsonPropertyName("deviceSecret")]
-    public required string DeviceSecret { get; init; }
+    public string? DeviceSecret { get; init; }
     [JsonPropertyName("deviceName")]
-    public required string DeviceName { get; init; }
+    public string? DeviceName { get; init; }
     [JsonPropertyName("accounts")]
-    public required IEnumerable<TwoFAAccount> Accounts { get; init; } = Enumerable.Empty<TwoFAAccount>();
+    public IEnumerable<TwoFAAccount> Accounts { get; init; } = Enumerable.Empty<TwoFAAccount>();
     [JsonPropertyName("version")]
     public required int Version { get; init; }
     [JsonPropertyName("deviceId")]
     [JsonConverter(typeof(GUIDJsonConverter))]
-    public required Guid DeviceId { get; init; }
+    public Guid DeviceId { get; init; } = Guid.Empty;
     [JsonPropertyName("folders")]
     public IEnumerable<TwoFAFolder> Folders { get; init; } = Enumerable.Empty<TwoFAFolder>();
 }
