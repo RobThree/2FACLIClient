@@ -83,24 +83,24 @@ internal class LastPassMFABackupDownloader
 
     private static LoginResult ParseLoginResult(string result)
     {
-        var serializer = new XmlSerializer(typeof(LoginResult));
-        using var reader = new StringReader(result);
-        return (LoginResult)serializer.Deserialize(reader)!;
+        try {   // Try OK response?
+            return ParseXML<LoginResult>(result);
+        } catch (InvalidOperationException) {   // Try "error response"?
+            var response = ParseXML<ErrorResponse>(result);
+            throw new LastPassLoginException(response?.Error?.Message ?? string.Empty);
+        }
+    }
+
+    private static T ParseXML<T>(string value) {
+        using var reader = new StringReader(value);
+        var serializer = new XmlSerializer(typeof(T));
+        return (T)(serializer.Deserialize(reader) ?? throw new InvalidOperationException());
     }
 
     internal record MFAData(
         [property: JsonPropertyName("userData")] string UserData,
         [property: JsonPropertyName("userId")] int UserId
     );
-
-    [XmlRoot("ok")]
-    public record LoginResult(  // Must be public for XML Serializer
-        [property: XmlAttribute("token")] string Token,
-        [property: XmlAttribute("sessionid")] string SessionId
-    )
-    {
-        public LoginResult() : this(string.Empty, string.Empty) { }
-    }
 
     private record Login(byte[] Key, string Hash);
 
@@ -134,6 +134,38 @@ internal class LastPassMFABackupDownloader
 
 public class LastPassMFABackupDownloaderException : Exception
 {
-    public LastPassMFABackupDownloaderException(string message, Exception? innerException)
+    public LastPassMFABackupDownloaderException(string message, Exception? innerException = null)
         : base(message, innerException) { }
+}
+
+public class LastPassLoginException : Exception
+{
+    public LastPassLoginException(string message, Exception? innerException = null)
+        : base(message, innerException) { }
+}
+
+[XmlRoot("ok")]
+public record LoginResult(  // Must be public for XML Serializer
+    [property: XmlAttribute("token")] string Token,
+    [property: XmlAttribute("sessionid")] string SessionId
+)
+{
+    public LoginResult() : this(string.Empty, string.Empty) { }
+}
+
+[XmlRoot("response")]
+public class ErrorResponse {
+    [XmlElement("error")]
+    public required Error Error { get; init; }
+}
+
+public record Error(
+    [property: XmlAttribute("message")] string Message,
+    [property: XmlAttribute("cause")] string Cause,
+    [property: XmlAttribute("email")] string Email,
+    [property: XmlAttribute("security_email")] string SecurityEmail,
+    [property: XmlAttribute("is_passwordless_login")] string IsPasswordlessLogin,
+    [property: XmlAttribute("passwordless_device_id")] string PasswordlessDeviceId
+) {
+    public Error() : this(string.Empty, string.Empty, string.Empty, string.Empty, string.Empty, string.Empty) { }
 }
