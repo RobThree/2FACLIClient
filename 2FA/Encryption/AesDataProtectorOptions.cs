@@ -10,6 +10,7 @@ internal record AesDataProtectorOptions
     public CipherMode CipherMode { get; init; } = CipherMode.CBC;
     public int SaltLength { get; init; } = 16;
     public int KeyLength { get; init; } = 32;
+    public PaddingMode PaddingMode { get; init; } = PaddingMode.PKCS7;
 
     public HashAlgorithmName HashAlgorithmName
         => HashAlgorithm switch

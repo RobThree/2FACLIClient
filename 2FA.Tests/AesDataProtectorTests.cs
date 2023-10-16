@@ -25,6 +25,7 @@ public class AesDataProtectorTests
             HashAlgorithm = "SHA256",
             Iterations = 500000,
             CipherMode = CipherMode.CBC,
+            PaddingMode = PaddingMode.PKCS7,
             SaltLength = 16,
             KeyLength = 32
         }));
@@ -48,6 +49,7 @@ public class AesDataProtectorTests
             HashAlgorithm = "SHA384",
             Iterations = 1234567,
             CipherMode = CipherMode.CFB,
+            PaddingMode = PaddingMode.ANSIX923,
             SaltLength = 32,
             KeyLength = 16
         }));
