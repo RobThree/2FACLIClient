@@ -66,6 +66,7 @@ internal class LastPassMFABackupDownloader
         aes.Key = key;
         aes.IV = iv;
         aes.Mode = CipherMode.CBC;
+        aes.Padding = PaddingMode.PKCS7;
 
         using var decryptor = aes.CreateDecryptor(aes.Key, aes.IV);
         using var ms = new MemoryStream(ciphertext);
@@ -83,15 +84,19 @@ internal class LastPassMFABackupDownloader
 
     private static LoginResult ParseLoginResult(string result)
     {
-        try {   // Try OK response?
+        try
+        {   // Try OK response?
             return ParseXML<LoginResult>(result);
-        } catch (InvalidOperationException) {   // Try "error response"?
+        }
+        catch (InvalidOperationException)
+        {   // Try "error response"?
             var response = ParseXML<ErrorResponse>(result);
             throw new LastPassLoginException(response?.Error?.Message ?? string.Empty);
         }
     }
 
-    private static T ParseXML<T>(string value) {
+    private static T ParseXML<T>(string value)
+    {
         using var reader = new StringReader(value);
         var serializer = new XmlSerializer(typeof(T));
         return (T)(serializer.Deserialize(reader) ?? throw new InvalidOperationException());
@@ -154,7 +159,8 @@ public record LoginResult(  // Must be public for XML Serializer
 }
 
 [XmlRoot("response")]
-public class ErrorResponse {
+public class ErrorResponse
+{
     [XmlElement("error")]
     public required Error Error { get; init; }
 }
@@ -166,6 +172,7 @@ public record Error(
     [property: XmlAttribute("security_email")] string SecurityEmail,
     [property: XmlAttribute("is_passwordless_login")] string IsPasswordlessLogin,
     [property: XmlAttribute("passwordless_device_id")] string PasswordlessDeviceId
-) {
+)
+{
     public Error() : this(string.Empty, string.Empty, string.Empty, string.Empty, string.Empty, string.Empty) { }
 }
