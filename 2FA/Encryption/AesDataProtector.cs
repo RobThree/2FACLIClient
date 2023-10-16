@@ -11,7 +11,7 @@ internal class AesDataProtector : IDataProtector
     private const int _saltlen = 16;
     private const int _derivedkeylength = 32;
     private static readonly byte[] _magicheader = "totp"u8.ToArray();    // Magic header
-    private const byte _version = 1;
+    private const byte _version = 2;
 
     public AesDataProtector(IOptions<AesDataProtectorOptions> options)
         => _options = options?.Value ?? throw new ArgumentNullException(nameof(options));
@@ -75,6 +75,7 @@ internal class AesDataProtector : IDataProtector
         aes.Mode = _options.CipherMode;
         aes.Key = key;
         aes.IV = iv ?? aes.IV;  // When no IV specified, use default IV
+        aes.Padding = aes.Padding;
 
         return aes;
     }
