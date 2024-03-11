@@ -20,7 +20,7 @@ build:
 test:
   stage: test
   script:
-    - dotnet test $PROJECTNAME -c Release
+    - dotnet test $PROJECTNAME.Tests -c Release
   only:
     - master
 
