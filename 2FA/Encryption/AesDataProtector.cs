@@ -5,16 +5,13 @@ using TwoFA.ResourceFiles;
 
 namespace TwoFA.Encryption;
 
-internal class AesDataProtector : IDataProtector
+internal class AesDataProtector(IOptions<AesDataProtectorOptions> options) : IDataProtector
 {
-    private readonly AesDataProtectorOptions _options;
+    private readonly AesDataProtectorOptions _options = options?.Value ?? throw new ArgumentNullException(nameof(options));
     private const int _saltlen = 16;
     private const int _derivedkeylength = 32;
     private static readonly byte[] _magicheader = "totp"u8.ToArray();    // Magic header
     private const byte _version = 1;
-
-    public AesDataProtector(IOptions<AesDataProtectorOptions> options)
-        => _options = options?.Value ?? throw new ArgumentNullException(nameof(options));
 
     public async Task SaveEncryptedAsync(string path, string data, string password, CancellationToken cancellationToken = default)
     {

@@ -49,7 +49,7 @@ internal static class StreamExtensions
     /// <param name="cancellationToken">The token to monitor for cancellation requests. The default value is <see cref="CancellationToken.None"/>.</param>
     /// <returns>The byte value.</returns>
     public static ValueTask WriteByteAsync(this Stream stream, byte value, CancellationToken cancellationToken = default)
-        => stream.WriteBytesAsync(new[] { value }, cancellationToken);
+        => stream.WriteBytesAsync([value], cancellationToken);
 
     /// <summary>
     /// Reads the specified number of bytes from the stream and returns those bytes as a <see cref="byte[]"/>.

@@ -10,7 +10,7 @@
             "request": "launch",
             "preLaunchTask": "build",
             // If you have changed target frameworks, make sure to update the program path.
-            "program": "${workspaceFolder}/2FA/bin/Debug/net7.0/2fa.dll",
+            "program": "${workspaceFolder}/2FA/bin/Debug/net8.0/2fa.dll",
             "args": ["refresh", "-u", "user@domain.com", "-o", "123456"],
             "cwd": "${workspaceFolder}/2FA",
             // For more information about the 'console' field, see https://aka.ms/VSCode-CS-LaunchJson-Console

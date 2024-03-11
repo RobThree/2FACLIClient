@@ -7,16 +7,13 @@ using TwoFA.ResourceFiles;
 
 namespace TwoFA;
 
-internal class LastPassMFABackupDownloader
+internal class LastPassMFABackupDownloader(string hostUrl)
 {
     public const string DEFAULTBASEADDRESS = "https://lastpass.com";
-    private readonly string _hosturl;
+    private readonly string _hosturl = hostUrl ?? throw new ArgumentNullException(nameof(hostUrl));
 
     public LastPassMFABackupDownloader()
         : this(DEFAULTBASEADDRESS) { }
-
-    public LastPassMFABackupDownloader(string hostUrl)
-        => _hosturl = hostUrl ?? throw new ArgumentNullException(nameof(hostUrl));
 
     public async Task<string> DownloadAsync(string username, string password, string? otp, CancellationToken cancellationToken = default)
     {
@@ -83,15 +80,19 @@ internal class LastPassMFABackupDownloader
 
     private static LoginResult ParseLoginResult(string result)
     {
-        try {   // Try OK response?
+        try
+        {   // Try OK response?
             return ParseXML<LoginResult>(result);
-        } catch (InvalidOperationException) {   // Try "error response"?
+        }
+        catch (InvalidOperationException)
+        {   // Try "error response"?
             var response = ParseXML<ErrorResponse>(result);
             throw new LastPassLoginException(response?.Error?.Message ?? string.Empty);
         }
     }
 
-    private static T ParseXML<T>(string value) {
+    private static T ParseXML<T>(string value)
+    {
         using var reader = new StringReader(value);
         var serializer = new XmlSerializer(typeof(T));
         return (T)(serializer.Deserialize(reader) ?? throw new InvalidOperationException());
@@ -132,17 +133,9 @@ internal class LastPassMFABackupDownloader
     }
 }
 
-public class LastPassMFABackupDownloaderException : Exception
-{
-    public LastPassMFABackupDownloaderException(string message, Exception? innerException = null)
-        : base(message, innerException) { }
-}
+public class LastPassMFABackupDownloaderException(string message, Exception? innerException = null) : Exception(message, innerException) { }
 
-public class LastPassLoginException : Exception
-{
-    public LastPassLoginException(string message, Exception? innerException = null)
-        : base(message, innerException) { }
-}
+public class LastPassLoginException(string message, Exception? innerException = null) : Exception(message, innerException) { }
 
 [XmlRoot("ok")]
 public record LoginResult(  // Must be public for XML Serializer
@@ -154,7 +147,8 @@ public record LoginResult(  // Must be public for XML Serializer
 }
 
 [XmlRoot("response")]
-public class ErrorResponse {
+public class ErrorResponse
+{
     [XmlElement("error")]
     public required Error Error { get; init; }
 }
@@ -166,6 +160,7 @@ public record Error(
     [property: XmlAttribute("security_email")] string SecurityEmail,
     [property: XmlAttribute("is_passwordless_login")] string IsPasswordlessLogin,
     [property: XmlAttribute("passwordless_device_id")] string PasswordlessDeviceId
-) {
+)
+{
     public Error() : this(string.Empty, string.Empty, string.Empty, string.Empty, string.Empty, string.Empty) { }
 }

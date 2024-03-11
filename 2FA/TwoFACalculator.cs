@@ -4,12 +4,9 @@ using TwoFA.ResourceFiles;
 
 namespace TwoFA;
 
-internal partial class TwoFACalculator
+internal partial class TwoFACalculator(IOptions<TwoFACalculatorOptions> options)
 {
-    private readonly TwoFACalculatorOptions _options;
-
-    public TwoFACalculator(IOptions<TwoFACalculatorOptions> options)
-        => _options = options?.Value ?? throw new ArgumentNullException(nameof(options));
+    private readonly TwoFACalculatorOptions _options = options?.Value ?? throw new ArgumentNullException(nameof(options));
 
     public string GetCode(string secret)
         => GetCode(secret, DateTimeOffset.UtcNow);
@@ -20,7 +17,7 @@ internal partial class TwoFACalculator
         using var algo = (KeyedHashAlgorithm)(CryptoConfig.CreateFromName(algoname) ?? throw new InvalidOperationException(string.Format(Translations.EX_FAILED_TO_INITIALIZE_HASHALGO, algoname)));
         algo.Key = Base32.Decode(secret);
         var ts = BitConverter.GetBytes(GetTimeSlice(dateTime.ToUnixTimeSeconds(), 0, (int)_options.Period.TotalSeconds));
-        var hashhmac = algo.ComputeHash(new byte[] { 0, 0, 0, 0, ts[3], ts[2], ts[1], ts[0] });
+        var hashhmac = algo.ComputeHash([0, 0, 0, 0, ts[3], ts[2], ts[1], ts[0]]);
         var offset = hashhmac[^1] & 0x0F;
         return $@"{((
             (hashhmac[offset + 0] << 24) |
