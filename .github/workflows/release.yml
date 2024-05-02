@@ -45,6 +45,7 @@ jobs:
           dotnet publish 2FA --runtime ${{ matrix.target }} --configuration Release --property:PublishDir="../artifacts" --self-contained false
 
           # Pack files
+          # Make sure workflow permissions (Repository -> Settings -> Actions -> General -> Workflow Permissions are set to "Read and Write"!
           if [[ "${{ matrix.target }}" == win-* ]]; then
             # Pack to zip for Windows
             7z a -tzip "${release_name}.zip" "./artifacts/*"
