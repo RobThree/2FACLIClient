@@ -38,7 +38,7 @@ internal class AesDataProtector(IOptions<AesDataProtectorOptions> options) : IDa
 
         // Check magic header
         var header = await fs.ReadBytesAsync(_magicheader.Length, cancellationToken).ConfigureAwait(false);     // Read magic header
-        if (!_magicheader.SequenceEqual(header.ToArray()))
+        if (!_magicheader.SequenceEqual([.. header]))
         {
             throw new InvalidOperationException(Translations.EX_VAULT_FILE_INVALID);
         }

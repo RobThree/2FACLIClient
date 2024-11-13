@@ -13,12 +13,12 @@ internal record TwoFASecretsFile
     [JsonPropertyName("deviceName")]
     public string? DeviceName { get; init; }
     [JsonPropertyName("accounts")]
-    public IEnumerable<TwoFAAccount> Accounts { get; init; } = Enumerable.Empty<TwoFAAccount>();
+    public IEnumerable<TwoFAAccount> Accounts { get; init; } = [];
     [JsonPropertyName("version")]
     public required int Version { get; init; }
     [JsonPropertyName("deviceId")]
     [JsonConverter(typeof(GUIDJsonConverter))]
     public Guid DeviceId { get; init; } = Guid.Empty;
     [JsonPropertyName("folders")]
-    public IEnumerable<TwoFAFolder> Folders { get; init; } = Enumerable.Empty<TwoFAFolder>();
+    public IEnumerable<TwoFAFolder> Folders { get; init; } = [];
 }
